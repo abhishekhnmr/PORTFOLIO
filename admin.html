@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portfolio Admin CMS — Abhishek Hingmire</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- SECURITY PIN LOCK OVERLAY -->
+  <div class="admin-lock-overlay" id="admin-lock-overlay">
+    <div class="admin-lock-modal">
+      <div class="lock-icon">🔒</div>
+      <h2 style="font-family:var(--font-serif); font-size:1.8rem; margin:10px 0 6px;">Admin Access Locked</h2>
+      <p style="color:var(--muted); font-size:13px; margin-bottom:24px;">Enter your secure PIN to access the CMS studio.</p>
+      
+      <div class="form-group" style="text-align:left;">
+        <label>Security PIN</label>
+        <input type="password" id="input-pin-attempt" placeholder="Enter PIN (Default: 1234)" style="text-align:center; letter-spacing:4px; font-size:18px; font-family:var(--font-mono);" />
+        <div id="pin-error-msg" style="color:var(--danger); font-size:12px; margin-top:6px; display:none;">✕ Incorrect PIN. Access denied.</div>
+      </div>
+      
+      <div style="display:flex; gap:12px; margin-top:20px;">
+        <a href="index.html" class="btn btn-outline" style="flex:1; justify-content:center;">← Back to Website</a>
+        <button type="button" class="btn btn-primary" id="btn-unlock-admin" style="flex:1; justify-content:center;">Unlock Studio</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- HEADER -->
+  <header class="admin-header">
+    <div class="admin-brand">
+      <div class="admin-title">Portfolio <span>CMS Studio</span></div>
+      <span class="badge">Protected Admin</span>
+    </div>
+    <div class="admin-actions">
+      <a href="index.html" class="btn btn-outline" target="_blank">👁 Live Preview ↗</a>
+      <button type="button" class="btn btn-primary" id="btn-save-all">💾 Save All Changes</button>
+    </div>
+  </header>
+
+  <!-- CONTAINER -->
+  <div class="admin-container">
+    <!-- SIDEBAR TABS -->
+    <aside class="admin-sidebar">
+      <button type="button" class="nav-tab-btn active" data-tab="tab-profile">👤 Profile & Hero</button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-about">📖 About & Metrics</button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-skills">⚡ Skills & Stack</button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-experience">💼 Work Experience</button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-projects">🚀 Selected Projects</button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-education">🎓 Education & Certs</button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-contact">📬 Contact & Links</button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-settings">🎨 Theme & Backup</button>
+    </aside>
+
+    <!-- CONTENT PANELS -->
+    <main class="admin-content">
+
+      <!-- 1. PROFILE & HERO TAB -->
+      <div class="tab-panel active" id="tab-profile">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Hero & Basic Profile</h2>
+            <div class="panel-subtitle">Update your headline, typewriter roles, and top hero highlights.</div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>First Name</label>
+            <input type="text" id="input-firstName" placeholder="Abhishek">
+          </div>
+          <div class="form-group">
+            <label>Last Name</label>
+            <input type="text" id="input-lastName" placeholder="Hingmire">
+          </div>
+          <div class="form-group full-width">
+            <label>Full Display Name</label>
+            <input type="text" id="input-fullName" placeholder="Abhishek Hingmire">
+          </div>
+          <div class="form-group full-width">
+            <label>Hero Eyebrow Tagline</label>
+            <input type="text" id="input-eyebrow" placeholder="Mumbai, India — Available Immediately">
+          </div>
+          <div class="form-group">
+            <label>Profile Picture URL / Path</label>
+            <input type="text" id="input-photo" placeholder="profile.jpg">
+          </div>
+          <div class="form-group">
+            <label>Profile Photo Badge Text</label>
+            <input type="text" id="input-photoBadge" placeholder="Available for Hire">
+          </div>
+          <div class="form-group full-width">
+            <label>Upload / Change Profile Picture</label>
+            <input type="file" id="input-photo-file" accept="image/*">
+            <span class="help-text">Select an image from your computer to replace your portrait photo.</span>
+          </div>
+          <div class="form-group full-width">
+            <label>Typewriter Roles (One per line)</label>
+            <textarea id="input-roles" rows="5" placeholder="Data Analyst&#10;BFSI & Fintech Analytics&#10;Python & SQL Specialist&#10;Business Intelligence"></textarea>
+            <span class="help-text">These rotate dynamically in the hero's code animation: const role = "..."</span>
+          </div>
+        </div>
+
+        <h3 style="font-family:var(--font-serif); margin:30px 0 16px; font-size:1.3rem; color:var(--champagne);">Hero Highlight Pills (3 Cards)</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Highlight 1 Title</label>
+            <input type="text" id="input-meta1-title" placeholder="3+ Years Exp">
+          </div>
+          <div class="form-group">
+            <label>Highlight 1 Subtitle</label>
+            <input type="text" id="input-meta1-sub" placeholder="BFSI & Financial Data Operations">
+          </div>
+          <div class="form-group">
+            <label>Highlight 2 Title</label>
+            <input type="text" id="input-meta2-title" placeholder="SG Analytics">
+          </div>
+          <div class="form-group">
+            <label>Highlight 2 Subtitle</label>
+            <input type="text" id="input-meta2-sub" placeholder="Associate Analyst (BFSI/Fintech)">
+          </div>
+          <div class="form-group">
+            <label>Highlight 3 Title</label>
+            <input type="text" id="input-meta3-title" placeholder="Python & Power BI">
+          </div>
+          <div class="form-group">
+            <label>Highlight 3 Subtitle</label>
+            <input type="text" id="input-meta3-sub" placeholder="Automated Reporting & ETL Pipelines">
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. ABOUT & METRICS TAB -->
+      <div class="tab-panel" id="tab-about">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">About Bio & Metric Scorecards</h2>
+            <div class="panel-subtitle">Edit the narrative bio and key highlight metric cards.</div>
+          </div>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Bio Paragraph 1</label>
+          <textarea id="input-about-p1" rows="3"></textarea>
+        </div>
+        <div class="form-group full-width">
+          <label>Bio Paragraph 2</label>
+          <textarea id="input-about-p2" rows="3"></textarea>
+        </div>
+        <div class="form-group full-width">
+          <label>Bio Paragraph 3</label>
+          <textarea id="input-about-p3" rows="3"></textarea>
+        </div>
+
+        <h3 style="font-family:var(--font-serif); margin:30px 0 16px; font-size:1.3rem; color:var(--champagne);">About Stat Metric Cards</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Stat 1 Number / Value</label>
+            <input type="text" id="input-stat1-num" placeholder="3+">
+          </div>
+          <div class="form-group">
+            <label>Stat 1 Description Label</label>
+            <input type="text" id="input-stat1-lbl" placeholder="Years Experience in BFSI & Data Analytics">
+          </div>
+
+          <div class="form-group">
+            <label>Stat 2 Number / Value</label>
+            <input type="text" id="input-stat2-num" placeholder="100%">
+          </div>
+          <div class="form-group">
+            <label>Stat 2 Description Label</label>
+            <input type="text" id="input-stat2-lbl" placeholder="Data Accuracy & Reconciliation Standards">
+          </div>
+
+          <div class="form-group">
+            <label>Stat 3 Number / Value</label>
+            <input type="text" id="input-stat3-num" placeholder="03+">
+          </div>
+          <div class="form-group">
+            <label>Stat 3 Description Label</label>
+            <input type="text" id="input-stat3-lbl" placeholder="Enterprise Analytics & ETL Systems Shipped">
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. SKILLS TAB -->
+      <div class="tab-panel" id="tab-skills">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Skills & Tech Stack</h2>
+            <div class="panel-subtitle">Manage the infinite scrolling marquee and categorized skill pills.</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-add-skill-cat">+ Add Category</button>
+        </div>
+
+        <div class="form-group full-width">
+          <label>Infinite Marquee Skills (Comma-separated)</label>
+          <textarea id="input-marquee-skills" rows="3" placeholder="Python, SQL (MySQL), Power BI, DAX Measures, Advanced Excel, Tableau"></textarea>
+          <span class="help-text">These render in the luxury italic animated infinite banner.</span>
+        </div>
+
+        <h3 style="font-family:var(--font-serif); margin:28px 0 16px; font-size:1.3rem; color:var(--champagne);">Categorized Skill Groups</h3>
+        <div id="skill-cats-container">
+          <!-- Populated dynamically via admin.js -->
+        </div>
+      </div>
+
+      <!-- 4. EXPERIENCE TAB -->
+      <div class="tab-panel" id="tab-experience">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Professional Experience</h2>
+            <div class="panel-subtitle">Manage roles, companies, dates, and achievement bullet points.</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-add-experience">+ Add Role</button>
+        </div>
+
+        <div id="experiences-container">
+          <!-- Populated dynamically via admin.js -->
+        </div>
+      </div>
+
+      <!-- 5. PROJECTS TAB -->
+      <div class="tab-panel" id="tab-projects">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Selected Projects & Case Studies</h2>
+            <div class="panel-subtitle">Showcase your top data analytics, ETL pipelines, and BI dashboards.</div>
+          </div>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-add-project">+ Add Project</button>
+        </div>
+
+        <div id="projects-container">
+          <!-- Populated dynamically via admin.js -->
+        </div>
+      </div>
+
+      <!-- 6. EDUCATION & CREDENTIALS TAB -->
+      <div class="tab-panel" id="tab-education">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Education & Certifications</h2>
+            <div class="panel-subtitle">Update verified badges, certifications, and academic degrees.</div>
+          </div>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+          <h3 style="font-family:var(--font-serif); font-size:1.3rem; color:var(--champagne);">Certifications & Badges</h3>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-add-cert">+ Add Certification</button>
+        </div>
+        <div id="certs-container">
+          <!-- Populated dynamically -->
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin:36px 0 14px;">
+          <h3 style="font-family:var(--font-serif); font-size:1.3rem; color:var(--champagne);">Academic Degrees</h3>
+          <button type="button" class="btn btn-outline btn-sm" id="btn-add-edu">+ Add Degree</button>
+        </div>
+        <div id="edu-container">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- 7. CONTACT TAB -->
+      <div class="tab-panel" id="tab-contact">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Contact & Social Channels</h2>
+            <div class="panel-subtitle">Update email, phone, location, LinkedIn, and GitHub links.</div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Email Address</label>
+            <input type="email" id="input-email" placeholder="abhishekhingmire2171@gmail.com">
+          </div>
+          <div class="form-group">
+            <label>Phone Number (Tel link)</label>
+            <input type="tel" id="input-phone" placeholder="+91-8623921350">
+          </div>
+          <div class="form-group">
+            <label>Phone Display Text</label>
+            <input type="text" id="input-phoneDisplay" placeholder="+91 86239 21350">
+          </div>
+          <div class="form-group">
+            <label>Location</label>
+            <input type="text" id="input-location" placeholder="Mumbai, India">
+          </div>
+          <div class="form-group full-width">
+            <label>LinkedIn Profile URL</label>
+            <input type="url" id="input-linkedin" placeholder="https://www.linkedin.com/in/...">
+          </div>
+          <div class="form-group full-width">
+            <label>GitHub Profile URL</label>
+            <input type="url" id="input-github" placeholder="https://github.com/...">
+          </div>
+        </div>
+      </div>
+
+      <!-- 8. SETTINGS & BACKUP TAB -->
+      <div class="tab-panel" id="tab-settings">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Theme Customization & Data Backup</h2>
+            <div class="panel-subtitle">Customize accent tones, export JSON backups, or restore defaults.</div>
+          </div>
+        </div>
+
+        <h3 style="font-family:var(--font-serif); font-size:1.3rem; color:var(--champagne); margin-bottom:16px;">Color Accents</h3>
+        <div class="form-grid" style="margin-bottom:36px;">
+          <div class="form-group">
+            <label>Champagne Gold Accent</label>
+            <input type="color" id="input-accent-color" value="#c9a664" style="height:46px; cursor:pointer;">
+          </div>
+          <div class="form-group">
+            <label>Teal / Cyan Accent</label>
+            <input type="color" id="input-accent-teal" value="#4fd1c5" style="height:46px; cursor:pointer;">
+          </div>
+        </div>
+
+        <h3 style="font-family:var(--font-serif); font-size:1.3rem; color:var(--champagne); margin-bottom:16px;">Security & Access Control</h3>
+        <div class="form-grid" style="margin-bottom:36px;">
+          <div class="form-group">
+            <label>Admin Security PIN</label>
+            <input type="text" id="input-admin-pin" placeholder="1234" style="letter-spacing:2px; font-family:var(--font-mono);" />
+            <span class="help-text">Only someone with this PIN can access and edit this Admin CMS Studio.</span>
+          </div>
+        </div>
+
+        <h3 style="font-family:var(--font-serif); font-size:1.3rem; color:var(--champagne); margin-bottom:16px;">Backup & Portability</h3>
+        <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px; line-height:1.6;">
+          Your changes are stored securely in your browser's local storage. You can export a full JSON backup file to carry your portfolio data across computers or deploy with hardcoded defaults.
+        </p>
+
+        <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:40px;">
+          <button type="button" class="btn btn-outline" id="btn-export-json">📥 Download Backup JSON</button>
+          
+          <label class="btn btn-outline" style="cursor:pointer; margin-bottom:0;">
+            📤 Restore from JSON
+            <input type="file" id="input-import-file" accept=".json" style="display:none;">
+          </label>
+        </div>
+
+        <div style="border-top:1px solid var(--line); padding-top:24px;">
+          <h4 style="color:var(--danger); font-family:var(--font-mono); font-size:12px; letter-spacing:1px; text-transform:uppercase; margin-bottom:10px;">Danger Zone</h4>
+          <p style="color:var(--muted); font-size:13px; margin-bottom:14px;">
+            Reset all portfolio content back to the initial resume data from Abhishek Hingmire's PDF.
+          </p>
+          <button type="button" class="btn btn-danger" id="btn-reset-default">⚠️ Reset to Default Resume Data</button>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="admin-toast" id="admin-toast">✓ Saved successfully</div>
+
+  <!-- SCRIPTS -->
+  <script src="data.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
