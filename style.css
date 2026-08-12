@@ -623,13 +623,9 @@ section {
 /* ABOUT SECTION */
 .about-grid {
   display: grid;
-  grid-template-columns: 340px 1.25fr 0.8fr;
+  grid-template-columns: 340px 1fr;
   gap: 40px;
   align-items: start;
-}
-
-.about-grid.no-stats {
-  grid-template-columns: 340px 1fr;
 }
 
 .about-image-wrap {

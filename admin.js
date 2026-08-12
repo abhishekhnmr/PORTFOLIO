@@ -123,18 +123,10 @@
     document.getElementById('input-meta3-title').value = meta[2]?.title || '';
     document.getElementById('input-meta3-sub').value = meta[2]?.subtitle || '';
 
-    // 2. About & Stats
+    // 2. About Narrative
     const bioVal = currentData.profile.aboutBio || (Array.isArray(currentData.profile.aboutText) ? currentData.profile.aboutText.join('\n\n') : '');
     const bioInput = document.getElementById('input-about-bio');
     if (bioInput) bioInput.value = bioVal;
-
-    const stats = currentData.profile.stats || [];
-    document.getElementById('input-stat1-num').value = stats[0]?.num || '';
-    document.getElementById('input-stat1-lbl').value = stats[0]?.label || '';
-    document.getElementById('input-stat2-num').value = stats[1]?.num || '';
-    document.getElementById('input-stat2-lbl').value = stats[1]?.label || '';
-    document.getElementById('input-stat3-num').value = stats[2]?.num || '';
-    document.getElementById('input-stat3-lbl').value = stats[2]?.label || '';
 
     // 3. Skills
     document.getElementById('input-marquee-skills').value = (currentData.marqueeSkills || []).join(', ');
@@ -822,20 +814,6 @@
       currentData.profile.aboutBio = bioInput;
       currentData.profile.aboutText = bioInput.split('\n\n').map((p) => p.trim()).filter(Boolean);
     }
-
-    // Stats (Optional)
-    const s1Num = document.getElementById('input-stat1-num')?.value?.trim() || '';
-    const s1Lbl = document.getElementById('input-stat1-lbl')?.value?.trim() || '';
-    const s2Num = document.getElementById('input-stat2-num')?.value?.trim() || '';
-    const s2Lbl = document.getElementById('input-stat2-lbl')?.value?.trim() || '';
-    const s3Num = document.getElementById('input-stat3-num')?.value?.trim() || '';
-    const s3Lbl = document.getElementById('input-stat3-lbl')?.value?.trim() || '';
-
-    currentData.profile.stats = [
-      { num: s1Num, label: s1Lbl },
-      { num: s2Num, label: s2Lbl },
-      { num: s3Num, label: s3Lbl }
-    ];
 
     // Skills Marquee
     const marqueeInput = document.getElementById('input-marquee-skills')?.value?.trim();

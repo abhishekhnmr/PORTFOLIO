@@ -118,41 +118,13 @@
     if (aboutBadgeTextEl) aboutBadgeTextEl.textContent = 'BFSI & BI Specialist';
   }
 
-  // 3. Render About Text & Stats
+  // 3. Render About Narrative
   const aboutTextContainer = document.getElementById('about-text-container');
   if (aboutTextContainer && data.profile) {
     if (typeof data.profile.aboutBio === 'string' && data.profile.aboutBio.trim() !== '') {
       aboutTextContainer.innerHTML = data.profile.aboutBio.trim();
     } else if (Array.isArray(data.profile.aboutText) && data.profile.aboutText.length > 0) {
-      aboutTextContainer.innerHTML = data.profile.aboutText
-        .map((p) => `<p>${p}</p>`)
-        .join('');
-    }
-  }
-
-  const aboutStatsContainer = document.getElementById('about-stats-container');
-  const aboutGrid = document.querySelector('.about-grid');
-  const validStats = (data.profile && Array.isArray(data.profile.stats))
-    ? data.profile.stats.filter((st) => st && ((st.num && st.num.trim() !== '') || (st.label && st.label.trim() !== '')))
-    : [];
-
-  if (aboutStatsContainer) {
-    if (validStats.length > 0) {
-      aboutStatsContainer.style.display = 'flex';
-      if (aboutGrid) aboutGrid.classList.remove('no-stats');
-      aboutStatsContainer.innerHTML = validStats
-        .map(
-          (st) => `
-          <div class="stat-card">
-            <div class="num">${st.num}</div>
-            <div class="label">${st.label}</div>
-          </div>
-        `
-        )
-        .join('');
-    } else {
-      aboutStatsContainer.style.display = 'none';
-      if (aboutGrid) aboutGrid.classList.add('no-stats');
+      aboutTextContainer.innerHTML = data.profile.aboutText.join('\n\n');
     }
   }
 
