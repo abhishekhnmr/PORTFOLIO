@@ -22,6 +22,11 @@ const DEFAULT_PORTFOLIO_DATA = {
       { title: "SG Analytics", subtitle: "Associate Analyst (BFSI/Fintech)" },
       { title: "Python & Power BI", subtitle: "Automated Reporting & ETL Pipelines" }
     ],
+    aboutBio: `I turn messy fintech data into decisions that move revenue. I’m a Data & Business Analyst with 3 years of experience across SG Analytics and Webshield Solution, working the full analytics stack: SQL and Snowflake for querying and financial data validation, Power BI and Tableau for dashboard design and business intelligence, and Power Query and Excel for reporting automation and workflow optimization.
+
+Core strengths: → SQL, Snowflake, Power BI, Tableau, Excel, Power Query — daily tools → Data Analysis, Data Modeling, Data Visualization, Dashboard Design → Financial Analysis, Data Validation, SLA Management, KPI Development → Requirements Gathering, Stakeholder Management, Gap Analysis, Process Improvement → Business Intelligence, Operational Reporting, Data Storytelling
+
+Proven impact: → Resolved 400+ client data issues annually with 100% SLA adherence → Automated reporting workflows, saving 24 hours per week in manual effort → Built Power BI and Tableau dashboards adopted across multiple teams for daily operational decisions.`,
     aboutText: [
       "Data Analyst with <strong>3+ years of experience</strong> in BFSI, Fintech & Exchange data analytics, business intelligence reporting, and MIS reporting across <strong>SG Analytics</strong> and <strong>Webshield Solutions</strong>.",
       "Proficient in <strong>Python, SQL, and Advanced Excel</strong>, with hands-on experience in data validation, reconciliation, and statistical analysis to support business decision-making. Skilled in building interactive dashboards, monitoring KPI performance, and delivering actionable business insights for cross-functional stakeholders.",

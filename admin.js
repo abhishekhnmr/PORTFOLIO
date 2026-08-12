@@ -124,10 +124,9 @@
     document.getElementById('input-meta3-sub').value = meta[2]?.subtitle || '';
 
     // 2. About & Stats
-    const aboutParas = currentData.profile.aboutText || [];
-    document.getElementById('input-about-p1').value = aboutParas[0] || '';
-    document.getElementById('input-about-p2').value = aboutParas[1] || '';
-    document.getElementById('input-about-p3').value = aboutParas[2] || '';
+    const bioVal = currentData.profile.aboutBio || (Array.isArray(currentData.profile.aboutText) ? currentData.profile.aboutText.join('\n\n') : '');
+    const bioInput = document.getElementById('input-about-bio');
+    if (bioInput) bioInput.value = bioVal;
 
     const stats = currentData.profile.stats || [];
     document.getElementById('input-stat1-num').value = stats[0]?.num || '';
@@ -817,39 +816,26 @@
       ];
     }
 
-    // About (preserve paragraphs if untouched)
-    const p1 = document.getElementById('input-about-p1')?.value?.trim();
-    const p2 = document.getElementById('input-about-p2')?.value?.trim();
-    const p3 = document.getElementById('input-about-p3')?.value?.trim();
-    const aboutArr = [p1, p2, p3].filter(Boolean);
-    if (aboutArr.length > 0) {
-      currentData.profile.aboutText = aboutArr;
+    // About Narrative Bio (Preserve exact formatting & spacing)
+    const bioInput = document.getElementById('input-about-bio')?.value;
+    if (bioInput !== undefined) {
+      currentData.profile.aboutBio = bioInput;
+      currentData.profile.aboutText = bioInput.split('\n\n').map((p) => p.trim()).filter(Boolean);
     }
 
-    // Stats (preserve if untouched)
-    const s1Num = document.getElementById('input-stat1-num')?.value?.trim();
-    const s1Lbl = document.getElementById('input-stat1-lbl')?.value?.trim();
-    const s2Num = document.getElementById('input-stat2-num')?.value?.trim();
-    const s2Lbl = document.getElementById('input-stat2-lbl')?.value?.trim();
-    const s3Num = document.getElementById('input-stat3-num')?.value?.trim();
-    const s3Lbl = document.getElementById('input-stat3-lbl')?.value?.trim();
+    // Stats (Optional)
+    const s1Num = document.getElementById('input-stat1-num')?.value?.trim() || '';
+    const s1Lbl = document.getElementById('input-stat1-lbl')?.value?.trim() || '';
+    const s2Num = document.getElementById('input-stat2-num')?.value?.trim() || '';
+    const s2Lbl = document.getElementById('input-stat2-lbl')?.value?.trim() || '';
+    const s3Num = document.getElementById('input-stat3-num')?.value?.trim() || '';
+    const s3Lbl = document.getElementById('input-stat3-lbl')?.value?.trim() || '';
 
-    if (s1Num || s2Num || s3Num) {
-      currentData.profile.stats = [
-        {
-          num: s1Num || currentData.profile.stats?.[0]?.num || '3+',
-          label: s1Lbl || currentData.profile.stats?.[0]?.label || 'Years Experience in BFSI & Data Analytics'
-        },
-        {
-          num: s2Num || currentData.profile.stats?.[1]?.num || '100%',
-          label: s2Lbl || currentData.profile.stats?.[1]?.label || 'Data Accuracy & Reconciliation Standards'
-        },
-        {
-          num: s3Num || currentData.profile.stats?.[2]?.num || '03+',
-          label: s3Lbl || currentData.profile.stats?.[2]?.label || 'Enterprise Analytics & ETL Systems Shipped'
-        }
-      ];
-    }
+    currentData.profile.stats = [
+      { num: s1Num, label: s1Lbl },
+      { num: s2Num, label: s2Lbl },
+      { num: s3Num, label: s3Lbl }
+    ];
 
     // Skills Marquee
     const marqueeInput = document.getElementById('input-marquee-skills')?.value?.trim();
