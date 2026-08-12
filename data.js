@@ -203,6 +203,6 @@ const DEFAULT_PORTFOLIO_DATA = {
   customization: {
     accentColor: "#c9a664",
     accentTeal: "#4fd1c5",
-    adminPin: "1234"
+    adminPin: "2171"
   }
 };

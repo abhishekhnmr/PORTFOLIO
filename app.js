@@ -10,17 +10,39 @@
       if (stored) {
         const parsed = JSON.parse(stored);
         if (parsed && typeof parsed === 'object') {
-          // Merge top-level objects to preserve any new defaults
           return {
             ...defaults,
             ...parsed,
             profile: {
               ...(defaults.profile || {}),
               ...(parsed.profile || {}),
+              photo: (parsed.profile && parsed.profile.photo && parsed.profile.photo.trim() !== '') ? parsed.profile.photo : (defaults.profile?.photo || 'profile.jpg'),
               contact: {
                 ...(defaults.profile?.contact || {}),
                 ...(parsed.profile?.contact || {})
-              }
+              },
+              heroMeta: (Array.isArray(parsed.profile?.heroMeta) && parsed.profile.heroMeta.length > 0)
+                ? parsed.profile.heroMeta
+                : (defaults.profile?.heroMeta || []),
+              aboutText: (Array.isArray(parsed.profile?.aboutText) && parsed.profile.aboutText.length > 0)
+                ? parsed.profile.aboutText
+                : (defaults.profile?.aboutText || []),
+              stats: (Array.isArray(parsed.profile?.stats) && parsed.profile.stats.length > 0)
+                ? parsed.profile.stats
+                : (defaults.profile?.stats || [])
+            },
+            projects: (Array.isArray(parsed.projects) && parsed.projects.length > 0) ? parsed.projects : (defaults.projects || []),
+            experiences: (Array.isArray(parsed.experiences) && parsed.experiences.length > 0) ? parsed.experiences : (defaults.experiences || []),
+            skillCategories: (Array.isArray(parsed.skillCategories) && parsed.skillCategories.length > 0) ? parsed.skillCategories : (defaults.skillCategories || []),
+            certifications: (Array.isArray(parsed.certifications) && parsed.certifications.length > 0) ? parsed.certifications : (defaults.certifications || []),
+            education: (Array.isArray(parsed.education) && parsed.education.length > 0) ? parsed.education : (defaults.education || []),
+            sectionHeadings: {
+              ...(defaults.sectionHeadings || {}),
+              ...(parsed.sectionHeadings || {})
+            },
+            customization: {
+              ...(defaults.customization || {}),
+              ...(parsed.customization || {})
             }
           };
         }
@@ -81,17 +103,12 @@
   const aboutImgWrap = document.querySelector('.about-image-wrap');
 
   if (data.profile) {
-    const photoSrc = data.profile.photo || 'profile.jpg';
+    const photoSrc = (data.profile.photo && data.profile.photo.trim() !== '') ? data.profile.photo.trim() : 'profile.jpg';
     if (heroImgEl) heroImgEl.src = photoSrc;
     if (aboutImgEl) aboutImgEl.src = photoSrc;
 
-    if (!data.profile.photo) {
-      if (heroImgWrap) heroImgWrap.style.display = 'none';
-      if (aboutImgWrap) aboutImgWrap.style.display = 'none';
-    } else {
-      if (heroImgWrap) heroImgWrap.style.display = 'flex';
-      if (aboutImgWrap) aboutImgWrap.style.display = 'flex';
-    }
+    if (heroImgWrap) heroImgWrap.style.display = 'flex';
+    if (aboutImgWrap) aboutImgWrap.style.display = 'flex';
   }
 
   const badgeTextEl = document.getElementById('hero-badge-text');

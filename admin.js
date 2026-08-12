@@ -17,10 +17,33 @@
             profile: {
               ...(defaults.profile || {}),
               ...(parsed.profile || {}),
+              photo: (parsed.profile && parsed.profile.photo && parsed.profile.photo.trim() !== '') ? parsed.profile.photo : (defaults.profile?.photo || 'profile.jpg'),
               contact: {
                 ...(defaults.profile?.contact || {}),
                 ...(parsed.profile?.contact || {})
-              }
+              },
+              heroMeta: (Array.isArray(parsed.profile?.heroMeta) && parsed.profile.heroMeta.length > 0)
+                ? parsed.profile.heroMeta
+                : (defaults.profile?.heroMeta || []),
+              aboutText: (Array.isArray(parsed.profile?.aboutText) && parsed.profile.aboutText.length > 0)
+                ? parsed.profile.aboutText
+                : (defaults.profile?.aboutText || []),
+              stats: (Array.isArray(parsed.profile?.stats) && parsed.profile.stats.length > 0)
+                ? parsed.profile.stats
+                : (defaults.profile?.stats || [])
+            },
+            projects: (Array.isArray(parsed.projects) && parsed.projects.length > 0) ? parsed.projects : (defaults.projects || []),
+            experiences: (Array.isArray(parsed.experiences) && parsed.experiences.length > 0) ? parsed.experiences : (defaults.experiences || []),
+            skillCategories: (Array.isArray(parsed.skillCategories) && parsed.skillCategories.length > 0) ? parsed.skillCategories : (defaults.skillCategories || []),
+            certifications: (Array.isArray(parsed.certifications) && parsed.certifications.length > 0) ? parsed.certifications : (defaults.certifications || []),
+            education: (Array.isArray(parsed.education) && parsed.education.length > 0) ? parsed.education : (defaults.education || []),
+            sectionHeadings: {
+              ...(defaults.sectionHeadings || {}),
+              ...(parsed.sectionHeadings || {})
+            },
+            customization: {
+              ...(defaults.customization || {}),
+              ...(parsed.customization || {})
             }
           };
           return;
@@ -731,117 +754,171 @@
 
   // --- COLLECT TOP-LEVEL FORM VALUES BEFORE SAVE ---
   function collectFormValues() {
+    if (!currentData.profile) currentData.profile = {};
+
     // Profile
-    currentData.profile.fullName = document.getElementById('input-fullName').value;
-    currentData.profile.firstName = document.getElementById('input-firstName').value;
-    currentData.profile.lastName = document.getElementById('input-lastName').value;
-    currentData.profile.eyebrow = document.getElementById('input-eyebrow').value;
-    currentData.profile.photo = document.getElementById('input-photo').value;
-    currentData.profile.photoBadge = document.getElementById('input-photoBadge').value;
-    currentData.profile.resumeUrl = document.getElementById('input-resume-url').value.trim();
-    currentData.profile.resumeButtonText = document.getElementById('input-resume-label').value.trim() || 'Download Resume';
-    currentData.profile.roles = document
-      .getElementById('input-roles')
-      .value.split('\n')
-      .map((r) => r.trim())
-      .filter(Boolean);
+    const fullNameVal = document.getElementById('input-fullName')?.value?.trim();
+    if (fullNameVal) currentData.profile.fullName = fullNameVal;
 
-    currentData.profile.heroMeta = [
-      {
-        title: document.getElementById('input-meta1-title').value,
-        subtitle: document.getElementById('input-meta1-sub').value
-      },
-      {
-        title: document.getElementById('input-meta2-title').value,
-        subtitle: document.getElementById('input-meta2-sub').value
-      },
-      {
-        title: document.getElementById('input-meta3-title').value,
-        subtitle: document.getElementById('input-meta3-sub').value
-      }
-    ];
+    const firstNameVal = document.getElementById('input-firstName')?.value?.trim();
+    if (firstNameVal) currentData.profile.firstName = firstNameVal;
 
-    // About
-    currentData.profile.aboutText = [
-      document.getElementById('input-about-p1').value,
-      document.getElementById('input-about-p2').value,
-      document.getElementById('input-about-p3').value
-    ].filter(Boolean);
+    const lastNameVal = document.getElementById('input-lastName')?.value?.trim();
+    if (lastNameVal) currentData.profile.lastName = lastNameVal;
 
-    currentData.profile.stats = [
-      {
-        num: document.getElementById('input-stat1-num').value,
-        label: document.getElementById('input-stat1-lbl').value
-      },
-      {
-        num: document.getElementById('input-stat2-num').value,
-        label: document.getElementById('input-stat2-lbl').value
-      },
-      {
-        num: document.getElementById('input-stat3-num').value,
-        label: document.getElementById('input-stat3-lbl').value
-      }
-    ];
+    const eyebrowVal = document.getElementById('input-eyebrow')?.value?.trim();
+    if (eyebrowVal) currentData.profile.eyebrow = eyebrowVal;
+
+    // Preserve photo: never let photo become empty or lost!
+    const photoVal = document.getElementById('input-photo')?.value?.trim();
+    if (photoVal) {
+      currentData.profile.photo = photoVal;
+    } else if (!currentData.profile.photo) {
+      currentData.profile.photo = 'profile.jpg';
+    }
+
+    const photoBadgeVal = document.getElementById('input-photoBadge')?.value?.trim();
+    if (photoBadgeVal) currentData.profile.photoBadge = photoBadgeVal;
+
+    const resumeUrlVal = document.getElementById('input-resume-url')?.value?.trim();
+    if (resumeUrlVal !== undefined) currentData.profile.resumeUrl = resumeUrlVal;
+
+    const resumeLabelVal = document.getElementById('input-resume-label')?.value?.trim();
+    if (resumeLabelVal) currentData.profile.resumeButtonText = resumeLabelVal;
+
+    const rolesVal = document.getElementById('input-roles')?.value?.trim();
+    if (rolesVal) {
+      const rolesArr = rolesVal.split('\n').map((r) => r.trim()).filter(Boolean);
+      if (rolesArr.length > 0) currentData.profile.roles = rolesArr;
+    }
+
+    // Hero Meta (preserve if untouched)
+    const m1Title = document.getElementById('input-meta1-title')?.value?.trim();
+    const m1Sub = document.getElementById('input-meta1-sub')?.value?.trim();
+    const m2Title = document.getElementById('input-meta2-title')?.value?.trim();
+    const m2Sub = document.getElementById('input-meta2-sub')?.value?.trim();
+    const m3Title = document.getElementById('input-meta3-title')?.value?.trim();
+    const m3Sub = document.getElementById('input-meta3-sub')?.value?.trim();
+
+    if (m1Title || m2Title || m3Title) {
+      currentData.profile.heroMeta = [
+        {
+          title: m1Title || currentData.profile.heroMeta?.[0]?.title || '3+ Years Exp',
+          subtitle: m1Sub || currentData.profile.heroMeta?.[0]?.subtitle || 'BFSI & Financial Data Operations'
+        },
+        {
+          title: m2Title || currentData.profile.heroMeta?.[1]?.title || 'SG Analytics',
+          subtitle: m2Sub || currentData.profile.heroMeta?.[1]?.subtitle || 'Associate Analyst (BFSI/Fintech)'
+        },
+        {
+          title: m3Title || currentData.profile.heroMeta?.[2]?.title || 'Python & Power BI',
+          subtitle: m3Sub || currentData.profile.heroMeta?.[2]?.subtitle || 'Automated Reporting & ETL Pipelines'
+        }
+      ];
+    }
+
+    // About (preserve paragraphs if untouched)
+    const p1 = document.getElementById('input-about-p1')?.value?.trim();
+    const p2 = document.getElementById('input-about-p2')?.value?.trim();
+    const p3 = document.getElementById('input-about-p3')?.value?.trim();
+    const aboutArr = [p1, p2, p3].filter(Boolean);
+    if (aboutArr.length > 0) {
+      currentData.profile.aboutText = aboutArr;
+    }
+
+    // Stats (preserve if untouched)
+    const s1Num = document.getElementById('input-stat1-num')?.value?.trim();
+    const s1Lbl = document.getElementById('input-stat1-lbl')?.value?.trim();
+    const s2Num = document.getElementById('input-stat2-num')?.value?.trim();
+    const s2Lbl = document.getElementById('input-stat2-lbl')?.value?.trim();
+    const s3Num = document.getElementById('input-stat3-num')?.value?.trim();
+    const s3Lbl = document.getElementById('input-stat3-lbl')?.value?.trim();
+
+    if (s1Num || s2Num || s3Num) {
+      currentData.profile.stats = [
+        {
+          num: s1Num || currentData.profile.stats?.[0]?.num || '3+',
+          label: s1Lbl || currentData.profile.stats?.[0]?.label || 'Years Experience in BFSI & Data Analytics'
+        },
+        {
+          num: s2Num || currentData.profile.stats?.[1]?.num || '100%',
+          label: s2Lbl || currentData.profile.stats?.[1]?.label || 'Data Accuracy & Reconciliation Standards'
+        },
+        {
+          num: s3Num || currentData.profile.stats?.[2]?.num || '03+',
+          label: s3Lbl || currentData.profile.stats?.[2]?.label || 'Enterprise Analytics & ETL Systems Shipped'
+        }
+      ];
+    }
 
     // Skills Marquee
-    currentData.marqueeSkills = document
-      .getElementById('input-marquee-skills')
-      .value.split(',')
-      .map((s) => s.trim())
-      .filter(Boolean);
+    const marqueeInput = document.getElementById('input-marquee-skills')?.value?.trim();
+    if (marqueeInput) {
+      const skillsArr = marqueeInput.split(',').map((s) => s.trim()).filter(Boolean);
+      if (skillsArr.length > 0) currentData.marqueeSkills = skillsArr;
+    }
 
     // Contact
     if (!currentData.profile.contact) currentData.profile.contact = {};
-    currentData.profile.contact.email = document.getElementById('input-email').value.trim() || 'abhishekhingmire2171@gmail.com';
-    currentData.profile.contact.emailLabel = document.getElementById('input-emailLabel').value.trim() || currentData.profile.contact.email;
-    currentData.profile.contact.phone = document.getElementById('input-phone').value.trim() || '+91-8623921350';
-    currentData.profile.contact.phoneLabel = document.getElementById('input-phoneLabel').value.trim() || '+91 86239 21350';
-    currentData.profile.contact.phoneDisplay = document.getElementById('input-phoneDisplay').value.trim() || '+91 86239 21350';
-    currentData.profile.contact.location = document.getElementById('input-location').value.trim() || 'Mumbai, India';
-    currentData.profile.contact.linkedin = document.getElementById('input-linkedin').value.trim() || 'https://www.linkedin.com/in/abhishek-hingmire';
-    currentData.profile.contact.linkedinLabel = document.getElementById('input-linkedinLabel').value.trim() || 'LinkedIn ↗';
-    currentData.profile.contact.github = document.getElementById('input-github').value.trim() || 'https://github.com/abhishekhingmire';
-    currentData.profile.contact.githubLabel = document.getElementById('input-githubLabel').value.trim() || 'GitHub ↗';
+    currentData.profile.contact.email = document.getElementById('input-email')?.value?.trim() || currentData.profile.contact.email || 'abhishekhingmire2171@gmail.com';
+    currentData.profile.contact.emailLabel = document.getElementById('input-emailLabel')?.value?.trim() || currentData.profile.contact.emailLabel || currentData.profile.contact.email;
+    currentData.profile.contact.phone = document.getElementById('input-phone')?.value?.trim() || currentData.profile.contact.phone || '+91-8623921350';
+    currentData.profile.contact.phoneLabel = document.getElementById('input-phoneLabel')?.value?.trim() || currentData.profile.contact.phoneLabel || '+91 86239 21350';
+    currentData.profile.contact.phoneDisplay = document.getElementById('input-phoneDisplay')?.value?.trim() || currentData.profile.contact.phoneDisplay || '+91 86239 21350';
+    currentData.profile.contact.location = document.getElementById('input-location')?.value?.trim() || currentData.profile.contact.location || 'Mumbai, India';
+    currentData.profile.contact.linkedin = document.getElementById('input-linkedin')?.value?.trim() || currentData.profile.contact.linkedin || 'https://www.linkedin.com/in/abhishek-hingmire';
+    currentData.profile.contact.linkedinLabel = document.getElementById('input-linkedinLabel')?.value?.trim() || currentData.profile.contact.linkedinLabel || 'LinkedIn ↗';
+    currentData.profile.contact.github = document.getElementById('input-github')?.value?.trim() || currentData.profile.contact.github || 'https://github.com/abhishekhingmire';
+    currentData.profile.contact.githubLabel = document.getElementById('input-githubLabel')?.value?.trim() || currentData.profile.contact.githubLabel || 'GitHub ↗';
 
     // Section Headings & Typography
     if (document.getElementById('input-heading-about-text')) {
       currentData.sectionHeadings = {
         about: {
-          text: document.getElementById('input-heading-about-text').value.trim() || 'About Me',
-          size: document.getElementById('input-heading-about-size').value.trim() || '2.5rem'
+          text: document.getElementById('input-heading-about-text').value.trim() || currentData.sectionHeadings?.about?.text || 'About Me',
+          size: document.getElementById('input-heading-about-size').value.trim() || currentData.sectionHeadings?.about?.size || '2.5rem'
         },
         skills: {
-          text: document.getElementById('input-heading-skills-text').value.trim() || 'Skills & Core Stack',
-          size: document.getElementById('input-heading-skills-size').value.trim() || '2.5rem'
+          text: document.getElementById('input-heading-skills-text').value.trim() || currentData.sectionHeadings?.skills?.text || 'Skills & Core Stack',
+          size: document.getElementById('input-heading-skills-size').value.trim() || currentData.sectionHeadings?.skills?.size || '2.5rem'
         },
         experience: {
-          text: document.getElementById('input-heading-exp-text').value.trim() || 'Experience',
-          size: document.getElementById('input-heading-exp-size').value.trim() || '2.5rem'
+          text: document.getElementById('input-heading-exp-text').value.trim() || currentData.sectionHeadings?.experience?.text || 'Experience',
+          size: document.getElementById('input-heading-exp-size').value.trim() || currentData.sectionHeadings?.experience?.size || '2.5rem'
         },
         projects: {
-          text: document.getElementById('input-heading-proj-text').value.trim() || 'Selected Work & Projects',
-          size: document.getElementById('input-heading-proj-size').value.trim() || '2.5rem'
+          text: document.getElementById('input-heading-proj-text').value.trim() || currentData.sectionHeadings?.projects?.text || 'Selected Work & Projects',
+          size: document.getElementById('input-heading-proj-size').value.trim() || currentData.sectionHeadings?.projects?.size || '2.5rem'
         },
         credentials: {
-          text: document.getElementById('input-heading-edu-text').value.trim() || 'Education & Credentials',
-          size: document.getElementById('input-heading-edu-size').value.trim() || '2.5rem'
+          text: document.getElementById('input-heading-edu-text').value.trim() || currentData.sectionHeadings?.credentials?.text || 'Education & Credentials',
+          size: document.getElementById('input-heading-edu-size').value.trim() || currentData.sectionHeadings?.credentials?.size || '2.5rem'
         },
         contact: {
-          text: document.getElementById('input-heading-contact-text').value.trim() || 'Contact',
-          size: document.getElementById('input-heading-contact-size').value.trim() || '2.5rem'
+          text: document.getElementById('input-heading-contact-text').value.trim() || currentData.sectionHeadings?.contact?.text || 'Contact',
+          size: document.getElementById('input-heading-contact-size').value.trim() || currentData.sectionHeadings?.contact?.size || '2.5rem'
         },
         contactHeadline: {
-          text: document.getElementById('input-heading-contactheadline-text').value.trim() || "Let's turn complex data into <em>actionable insights.</em>",
-          size: document.getElementById('input-heading-contactheadline-size').value.trim() || "clamp(2.2rem, 5.5vw, 4.2rem)"
+          text: document.getElementById('input-heading-contactheadline-text').value.trim() || currentData.sectionHeadings?.contactHeadline?.text || "Let's turn complex data into <em>actionable insights.</em>",
+          size: document.getElementById('input-heading-contactheadline-size').value.trim() || currentData.sectionHeadings?.contactHeadline?.size || "clamp(2.2rem, 5.5vw, 4.2rem)"
         }
       };
     }
 
     // Customization
     if (!currentData.customization) currentData.customization = {};
-    currentData.customization.accentColor = document.getElementById('input-accent-color').value;
-    currentData.customization.accentTeal = document.getElementById('input-accent-teal').value;
-    currentData.customization.adminPin = document.getElementById('input-admin-pin').value || '1234';
+    const accentCol = document.getElementById('input-accent-color')?.value;
+    if (accentCol) currentData.customization.accentColor = accentCol;
+
+    const accentTeal = document.getElementById('input-accent-teal')?.value;
+    if (accentTeal) currentData.customization.accentTeal = accentTeal;
+
+    const adminPinVal = document.getElementById('input-admin-pin')?.value?.trim();
+    if (adminPinVal) {
+      currentData.customization.adminPin = adminPinVal;
+    } else if (!currentData.customization.adminPin) {
+      currentData.customization.adminPin = '2171';
+    }
   }
 
   // --- SAVE BUTTONS ---
@@ -990,7 +1067,7 @@
 
     function attemptUnlock() {
       const entered = pinInput.value.trim();
-      const validPin = (currentData.customization && currentData.customization.adminPin) ? currentData.customization.adminPin : '1234';
+      const validPin = (currentData.customization && currentData.customization.adminPin) ? currentData.customization.adminPin : '2171';
 
       if (entered === validPin) {
         sessionStorage.setItem('admin_session_auth', 'true');
