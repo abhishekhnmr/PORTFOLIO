@@ -448,3 +448,51 @@ textarea {
 .shake {
   animation: shake 0.4s ease;
 }
+
+/* Multi-screenshot gallery chips in Admin */
+.ss-gallery-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.ss-thumb-chip {
+  position: relative;
+  width: 90px;
+  height: 60px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  background: var(--ink-3);
+}
+
+.ss-thumb-chip img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.ss-del-btn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(248, 113, 113, 0.9);
+  color: #fff;
+  border: none;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.ss-del-btn:hover {
+  transform: scale(1.2);
+  background: var(--danger);
+}
+

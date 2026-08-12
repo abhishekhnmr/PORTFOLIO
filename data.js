@@ -13,6 +13,8 @@ const DEFAULT_PORTFOLIO_DATA = {
     ],
     photo: "profile.jpg",
     photoBadge: "Available for Hire",
+    resumeUrl: "Abhishek_Hingmire_Resume.pdf",
+    resumeButtonText: "Download Resume",
     ctaText: "Get In Touch ↗",
     secondaryCtaText: "Explore Projects ↓",
     heroMeta: [
@@ -32,11 +34,15 @@ const DEFAULT_PORTFOLIO_DATA = {
     ],
     contact: {
       email: "abhishekhingmire2171@gmail.com",
+      emailLabel: "abhishekhingmire2171@gmail.com",
       phone: "+91-8623921350",
       phoneDisplay: "+91 86239 21350",
+      phoneLabel: "+91 86239 21350",
       location: "Mumbai, India",
       linkedin: "https://www.linkedin.com/in/abhishek-hingmire",
+      linkedinLabel: "LinkedIn ↗",
       github: "https://github.com/abhishekhingmire",
+      githubLabel: "GitHub ↗",
       availability: "Available Immediately"
     }
   },
@@ -117,28 +123,52 @@ const DEFAULT_PORTFOLIO_DATA = {
       id: "proj-1",
       title: "Synaptiqo — Adaptive Document Intelligence Platform",
       category: "Full Stack & AI Data Pipeline",
+      thumbnail: "synaptiqo-thumb.svg",
+      screenshots: [
+        "synaptiqo-thumb.svg",
+        "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80"
+      ],
       description: "Designed an end-to-end ETL pipeline to extract, validate, and classify structured information from unstructured documents using Python and FastAPI with PostgreSQL schema design. Built asynchronous worker pipelines with queue management, retry handling, OCR-based extraction, human-in-the-loop retraining, and vector database embeddings for semantic search.",
       tools: ["Python", "FastAPI", "PostgreSQL", "Docker", "Vector DB", "OCR", "Semantic Search"],
-      linkText: "View project architecture →",
-      linkUrl: "https://github.com/abhishekhingmire"
+      youtubeUrl: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      linkText: "View Case Study →",
+      githubUrl: "https://github.com/abhishekhingmire",
+      demoUrl: "https://github.com/abhishekhingmire"
     },
     {
       id: "proj-2",
       title: "Sales & Finance Performance Report — Retail Company",
       category: "Retail Analytics & Financial Modeling",
+      thumbnail: "sales-finance-thumb.svg",
+      screenshots: [
+        "sales-finance-thumb.svg",
+        "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=1200&q=80"
+      ],
       description: "Built Excel-based sales and finance reporting dashboards using Pivot Tables and advanced formulas; performed financial data validation, reconciliation, and consistency checks across revenue and cost datasets to improve reporting accuracy.",
-      tools: ["Advanced Excel", "Pivot Tables", "Power Query", "Advanced Formulas", "Financial Reconciliation"],
-      linkText: "Explore workbook details →",
-      linkUrl: "https://github.com/abhishekhingmire"
+      tools: ["Advanced Excel", "Pivot Tables", "Power Query", "Financial Reconciliation", "KPI Dashboards"],
+      youtubeUrl: "",
+      linkText: "View Case Study →",
+      githubUrl: "https://github.com/abhishekhingmire",
+      demoUrl: "https://github.com/abhishekhingmire"
     },
     {
       id: "proj-3",
       title: "Business Insights Dashboard — AtliQ Hardware",
       category: "Power BI & Business Intelligence",
+      thumbnail: "atliq-hardware-thumb.svg",
+      screenshots: [
+        "atliq-hardware-thumb.svg",
+        "https://images.unsplash.com/photo-1504868584819-f8e8b4b6d7e3?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1200&q=80"
+      ],
       description: "Developed Power BI dashboards using DAX measures, calculated columns, and Power Query transformations; conducted variance, reconciliation, and trend analysis to generate business insights and improve financial reporting accuracy.",
-      tools: ["Power BI", "DAX Measures", "Calculated Columns", "Advanced Excel", "Power Query"],
-      linkText: "View dashboard case study →",
-      linkUrl: "https://github.com/abhishekhingmire"
+      tools: ["Power BI", "DAX Measures", "Calculated Columns", "Data Modeling", "Power Query", "Excel"],
+      youtubeUrl: "",
+      linkText: "View Case Study →",
+      githubUrl: "https://github.com/abhishekhingmire",
+      demoUrl: "https://github.com/abhishekhingmire"
     }
   ],
   certifications: [
@@ -161,6 +191,15 @@ const DEFAULT_PORTFOLIO_DATA = {
       details: "Comprehensive coursework in Financial Accounting, Business Statistics, Economics, and Commercial Operations."
     }
   ],
+  sectionHeadings: {
+    about: { text: "About Me", size: "2.5rem" },
+    skills: { text: "Skills & Core Stack", size: "2.5rem" },
+    experience: { text: "Experience", size: "2.5rem" },
+    projects: { text: "Selected Work & Projects", size: "2.5rem" },
+    credentials: { text: "Education & Credentials", size: "2.5rem" },
+    contact: { text: "Contact", size: "2.5rem" },
+    contactHeadline: { text: "Let's turn complex data into <em>actionable insights.</em>", size: "3.2rem" }
+  },
   customization: {
     accentColor: "#c9a664",
     accentTeal: "#4fd1c5",

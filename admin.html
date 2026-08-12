@@ -53,8 +53,9 @@
       <button type="button" class="nav-tab-btn" data-tab="tab-experience">💼 Work Experience</button>
       <button type="button" class="nav-tab-btn" data-tab="tab-projects">🚀 Selected Projects</button>
       <button type="button" class="nav-tab-btn" data-tab="tab-education">🎓 Education & Certs</button>
-      <button type="button" class="nav-tab-btn" data-tab="tab-contact">📬 Contact & Links</button>
-      <button type="button" class="nav-tab-btn" data-tab="tab-settings">🎨 Theme & Backup</button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-contact">📬 Contact &amp; Links</button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-headings">🔤 Section Headings</button>
+      <button type="button" class="nav-tab-btn" data-tab="tab-settings">🎨 Theme &amp; Backup</button>
     </aside>
 
     <!-- CONTENT PANELS -->
@@ -98,6 +99,31 @@
             <label>Upload / Change Profile Picture</label>
             <input type="file" id="input-photo-file" accept="image/*">
             <span class="help-text">Select an image from your computer to replace your portrait photo.</span>
+          </div>
+        </div>
+
+        <h3 style="font-family:var(--font-serif); margin:30px 0 16px; font-size:1.3rem; color:var(--champagne);">📄 Resume Document Management</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Resume File URL / Path</label>
+            <input type="text" id="input-resume-url" placeholder="Abhishek_Hingmire_Resume.pdf">
+            <span class="help-text">Clear this field or click "Remove Resume" to hide the resume button completely.</span>
+          </div>
+          <div class="form-group">
+            <label>Resume Button Label</label>
+            <input type="text" id="input-resume-label" placeholder="Download Resume">
+          </div>
+          <div class="form-group full-width">
+            <label>Upload / Remove Resume PDF</label>
+            <div style="display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:4px;">
+              <label class="btn btn-outline" style="cursor:pointer; margin-bottom:0;">
+                📤 Upload New PDF
+                <input type="file" id="input-resume-file" accept=".pdf,application/pdf" style="display:none;">
+              </label>
+              <button type="button" class="btn btn-danger btn-sm" id="btn-remove-resume">🗑️ Remove Resume (Hide Button)</button>
+              <span id="resume-status-badge" style="font-family:var(--font-mono); font-size:12px; color:var(--success); margin-left:8px;">● Resume Active</span>
+            </div>
+            <span class="help-text" style="margin-top:6px;">Upload a PDF from your computer. If removed, the floating resume button will not appear on your website.</span>
           </div>
           <div class="form-group full-width">
             <label>Typewriter Roles (One per line)</label>
@@ -270,8 +296,8 @@
       <div class="tab-panel" id="tab-contact">
         <div class="panel-header">
           <div>
-            <h2 class="panel-title">Contact & Social Channels</h2>
-            <div class="panel-subtitle">Update email, phone, location, LinkedIn, and GitHub links.</div>
+            <h2 class="panel-title">Contact &amp; Social Channels</h2>
+            <div class="panel-subtitle">Update email, phone, location, and customize the text shown on each contact button.</div>
           </div>
         </div>
 
@@ -281,29 +307,131 @@
             <input type="email" id="input-email" placeholder="abhishekhingmire2171@gmail.com">
           </div>
           <div class="form-group">
+            <label>Email Button Text on Website</label>
+            <input type="text" id="input-emailLabel" placeholder="abhishekhingmire2171@gmail.com">
+          </div>
+
+          <div class="form-group">
             <label>Phone Number (Tel link)</label>
             <input type="tel" id="input-phone" placeholder="+91-8623921350">
           </div>
           <div class="form-group">
-            <label>Phone Display Text</label>
+            <label>Phone Button Text on Website</label>
+            <input type="text" id="input-phoneLabel" placeholder="+91 86239 21350">
+          </div>
+
+          <div class="form-group">
+            <label>Phone Display Subtitle (Optional)</label>
             <input type="text" id="input-phoneDisplay" placeholder="+91 86239 21350">
           </div>
           <div class="form-group">
             <label>Location</label>
             <input type="text" id="input-location" placeholder="Mumbai, India">
           </div>
-          <div class="form-group full-width">
+
+          <div class="form-group">
             <label>LinkedIn Profile URL</label>
             <input type="url" id="input-linkedin" placeholder="https://www.linkedin.com/in/...">
           </div>
-          <div class="form-group full-width">
+          <div class="form-group">
+            <label>LinkedIn Button Text on Website</label>
+            <input type="text" id="input-linkedinLabel" placeholder="LinkedIn ↗">
+          </div>
+
+          <div class="form-group">
             <label>GitHub Profile URL</label>
             <input type="url" id="input-github" placeholder="https://github.com/...">
+          </div>
+          <div class="form-group">
+            <label>GitHub Button Text on Website</label>
+            <input type="text" id="input-githubLabel" placeholder="GitHub ↗">
           </div>
         </div>
       </div>
 
-      <!-- 8. SETTINGS & BACKUP TAB -->
+      <!-- 8. SECTION HEADINGS & TYPOGRAPHY TAB -->
+      <div class="tab-panel" id="tab-headings">
+        <div class="panel-header">
+          <div>
+            <h2 class="panel-title">Section Headings &amp; Font Sizes</h2>
+            <div class="panel-subtitle">Customize the text and font size for every section title and headline across the site.</div>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <!-- 01 About -->
+          <div class="form-group">
+            <label>01 About Section - Heading Text</label>
+            <input type="text" id="input-heading-about-text" placeholder="About Me">
+          </div>
+          <div class="form-group">
+            <label>01 About Section - Font Size (e.g. 2.5rem or 36px)</label>
+            <input type="text" id="input-heading-about-size" placeholder="2.5rem">
+          </div>
+
+          <!-- 02 Skills -->
+          <div class="form-group">
+            <label>02 Skills Section - Heading Text</label>
+            <input type="text" id="input-heading-skills-text" placeholder="Skills & Core Stack">
+          </div>
+          <div class="form-group">
+            <label>02 Skills Section - Font Size</label>
+            <input type="text" id="input-heading-skills-size" placeholder="2.5rem">
+          </div>
+
+          <!-- 03 Experience -->
+          <div class="form-group">
+            <label>03 Experience Section - Heading Text</label>
+            <input type="text" id="input-heading-exp-text" placeholder="Experience">
+          </div>
+          <div class="form-group">
+            <label>03 Experience Section - Font Size</label>
+            <input type="text" id="input-heading-exp-size" placeholder="2.5rem">
+          </div>
+
+          <!-- 04 Projects -->
+          <div class="form-group">
+            <label>04 Projects Section - Heading Text</label>
+            <input type="text" id="input-heading-proj-text" placeholder="Selected Work & Projects">
+          </div>
+          <div class="form-group">
+            <label>04 Projects Section - Font Size</label>
+            <input type="text" id="input-heading-proj-size" placeholder="2.5rem">
+          </div>
+
+          <!-- 05 Education -->
+          <div class="form-group">
+            <label>05 Education & Credentials - Heading Text</label>
+            <input type="text" id="input-heading-edu-text" placeholder="Education & Credentials">
+          </div>
+          <div class="form-group">
+            <label>05 Education & Credentials - Font Size</label>
+            <input type="text" id="input-heading-edu-size" placeholder="2.5rem">
+          </div>
+
+          <!-- 06 Contact Section -->
+          <div class="form-group">
+            <label>06 Contact Section - Heading Text</label>
+            <input type="text" id="input-heading-contact-text" placeholder="Contact">
+          </div>
+          <div class="form-group">
+            <label>06 Contact Section - Font Size</label>
+            <input type="text" id="input-heading-contact-size" placeholder="2.5rem">
+          </div>
+
+          <!-- Contact Big Headline -->
+          <div class="form-group full-width">
+            <label>Contact Big Headline Text (HTML &lt;em&gt; supported for italic champagne glow)</label>
+            <input type="text" id="input-heading-contactheadline-text" placeholder="Let's turn complex data into &lt;em&gt;actionable insights.&lt;/em&gt;">
+          </div>
+          <div class="form-group full-width">
+            <label>Contact Big Headline - Font Size (e.g. 3.2rem or clamp(2.2rem, 5.5vw, 4.2rem))</label>
+            <input type="text" id="input-heading-contactheadline-size" placeholder="clamp(2.2rem, 5.5vw, 4.2rem)">
+          </div>
+        </div>
+      </div>
+
+      <!-- 9. SETTINGS & BACKUP TAB -->
       <div class="tab-panel" id="tab-settings">
         <div class="panel-header">
           <div>

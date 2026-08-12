@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480">
+  <defs>
+    <linearGradient id="bg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0c10"/>
+      <stop offset="50%" stop-color="#15131e"/>
+      <stop offset="100%" stop-color="#08090d"/>
+    </linearGradient>
+    <linearGradient id="gold2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f2d79c"/>
+      <stop offset="100%" stop-color="#c9a664"/>
+    </linearGradient>
+    <pattern id="grid2" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <rect width="800" height="480" fill="url(#bg2)"/>
+  <rect width="800" height="480" fill="url(#grid2)"/>
+
+  <!-- Blobs -->
+  <circle cx="250" cy="200" r="150" fill="#c9a664" opacity="0.08" filter="blur(60px)"/>
+  <circle cx="600" cy="280" r="130" fill="#e05252" opacity="0.06" filter="blur(70px)"/>
+
+  <!-- Window Frame -->
+  <rect x="60" y="50" width="680" height="380" rx="12" fill="#0e1117" stroke="rgba(201,166,100,0.25)" stroke-width="1.5"/>
+  
+  <!-- Header -->
+  <rect x="60" y="50" width="680" height="42" rx="12" fill="#141822"/>
+  <rect x="60" y="80" width="680" height="12" fill="#141822"/>
+  <circle cx="85" cy="71" r="5" fill="#e05252"/>
+  <circle cx="103" cy="71" r="5" fill="#e0a352"/>
+  <circle cx="121" cy="71" r="5" fill="#48bb78"/>
+  <text x="400" y="75" fill="#8892b0" font-family="'JetBrains Mono', monospace" font-size="12" text-anchor="middle">sales-finance-report.xlsx // Financial Reconciliation Model</text>
+
+  <!-- KPI Cards Row -->
+  <rect x="80" y="110" width="150" height="85" rx="8" fill="#141824" stroke="rgba(201,166,100,0.2)"/>
+  <text x="95" y="135" fill="#8892b0" font-family="'JetBrains Mono', monospace" font-size="10">TOTAL REVENUE</text>
+  <text x="95" y="170" fill="#f2d79c" font-family="'Fraunces', serif" font-size="22" font-weight="bold">$48.2M</text>
+
+  <rect x="250" y="110" width="150" height="85" rx="8" fill="#141824" stroke="rgba(72,187,120,0.2)"/>
+  <text x="265" y="135" fill="#8892b0" font-family="'JetBrains Mono', monospace" font-size="10">GROSS MARGIN</text>
+  <text x="265" y="170" fill="#48bb78" font-family="'Fraunces', serif" font-size="22" font-weight="bold">38.6% <tspan font-size="12" fill="#48bb78">↑ +4.2%</tspan></text>
+
+  <rect x="420" y="110" width="150" height="85" rx="8" fill="#141824" stroke="rgba(79,209,197,0.2)"/>
+  <text x="435" y="135" fill="#8892b0" font-family="'JetBrains Mono', monospace" font-size="10">RECONCILED</text>
+  <text x="435" y="170" fill="#4fd1c5" font-family="'Fraunces', serif" font-size="22" font-weight="bold">100.0%</text>
+
+  <rect x="590" y="110" width="130" height="85" rx="8" fill="#141824" stroke="rgba(255,255,255,0.06)"/>
+  <text x="605" y="135" fill="#8892b0" font-family="'JetBrains Mono', monospace" font-size="10">VARIANCE</text>
+  <text x="605" y="170" fill="#cbd5e0" font-family="'Fraunces', serif" font-size="22" font-weight="bold">0.00%</text>
+
+  <!-- Financial Chart Bar & Trend Mockup -->
+  <rect x="80" y="215" width="640" height="195" rx="8" fill="#10141e" stroke="rgba(255,255,255,0.05)"/>
+  
+  <!-- Bar chart bars -->
+  <rect x="120" y="320" width="36" height="65" rx="3" fill="#c9a664" opacity="0.6"/>
+  <rect x="180" y="295" width="36" height="90" rx="3" fill="#c9a664" opacity="0.75"/>
+  <rect x="240" y="270" width="36" height="115" rx="3" fill="#c9a664" opacity="0.85"/>
+  <rect x="300" y="250" width="36" height="135" rx="3" fill="#c9a664"/>
+  <rect x="360" y="280" width="36" height="105" rx="3" fill="#4fd1c5" opacity="0.7"/>
+  <rect x="420" y="240" width="36" height="145" rx="3" fill="#4fd1c5" opacity="0.85"/>
+  <rect x="480" y="225" width="36" height="160" rx="3" fill="#4fd1c5"/>
+  <rect x="540" y="260" width="36" height="125" rx="3" fill="#48bb78" opacity="0.8"/>
+  <rect x="600" y="235" width="36" height="150" rx="3" fill="#48bb78"/>
+
+  <!-- Month Labels -->
+  <text x="138" y="400" fill="#718096" font-family="'JetBrains Mono', monospace" font-size="9" text-anchor="middle">Q1</text>
+  <text x="258" y="400" fill="#718096" font-family="'JetBrains Mono', monospace" font-size="9" text-anchor="middle">Q2</text>
+  <text x="438" y="400" fill="#718096" font-family="'JetBrains Mono', monospace" font-size="9" text-anchor="middle">Q3</text>
+  <text x="580" y="400" fill="#718096" font-family="'JetBrains Mono', monospace" font-size="9" text-anchor="middle">Q4</text>
+</svg>

@@ -4,15 +4,31 @@
 
   // Load data from localStorage or fallback to DEFAULT_PORTFOLIO_DATA
   function getPortfolioData() {
+    const defaults = window.DEFAULT_PORTFOLIO_DATA || {};
     try {
       const stored = localStorage.getItem('portfolio_data');
       if (stored) {
-        return JSON.parse(stored);
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object') {
+          // Merge top-level objects to preserve any new defaults
+          return {
+            ...defaults,
+            ...parsed,
+            profile: {
+              ...(defaults.profile || {}),
+              ...(parsed.profile || {}),
+              contact: {
+                ...(defaults.profile?.contact || {}),
+                ...(parsed.profile?.contact || {})
+              }
+            }
+          };
+        }
       }
     } catch (e) {
       console.warn('Error loading localStorage data:', e);
     }
-    return window.DEFAULT_PORTFOLIO_DATA || {};
+    return defaults;
   }
 
   const data = getPortfolioData();
@@ -150,30 +166,206 @@
       .join('');
   }
 
-  // 6. Render Projects Grid
+  // 6. Render Projects Grid & Interactive Modal System
   const projectsContainer = document.getElementById('projects-grid');
+  const projectModalBackdrop = document.getElementById('project-modal-backdrop');
+  const modalCloseBtn = document.getElementById('modal-close-btn');
+  const modalProjCategory = document.getElementById('modal-proj-category');
+  const modalProjTitle = document.getElementById('modal-proj-title');
+  const modalProjDesc = document.getElementById('modal-proj-desc');
+  const modalProjTools = document.getElementById('modal-proj-tools');
+  const modalCarousel = document.getElementById('modal-carousel');
+  const carouselActiveImg = document.getElementById('carousel-active-img');
+  const carouselPrevBtn = document.getElementById('carousel-prev-btn');
+  const carouselNextBtn = document.getElementById('carousel-next-btn');
+  const carouselIndicators = document.getElementById('carousel-indicators');
+  const modalVideoWrap = document.getElementById('modal-video-wrap');
+  const modalYoutubeIframe = document.getElementById('modal-youtube-iframe');
+  const modalGithubBtn = document.getElementById('modal-github-btn');
+  const modalDemoBtn = document.getElementById('modal-demo-btn');
+
+  let currentProjectScreenshots = [];
+  let currentSlideIndex = 0;
+
+  function updateCarouselSlide(idx) {
+    if (!currentProjectScreenshots.length) return;
+    if (idx < 0) idx = currentProjectScreenshots.length - 1;
+    if (idx >= currentProjectScreenshots.length) idx = 0;
+    currentSlideIndex = idx;
+
+    if (carouselActiveImg) {
+      carouselActiveImg.style.opacity = '0';
+      setTimeout(() => {
+        carouselActiveImg.src = currentProjectScreenshots[currentSlideIndex];
+        carouselActiveImg.style.opacity = '1';
+      }, 150);
+    }
+
+    if (carouselIndicators) {
+      const dots = carouselIndicators.querySelectorAll('.carousel-dot');
+      dots.forEach((dot, i) => {
+        dot.classList.toggle('active', i === currentSlideIndex);
+      });
+    }
+  }
+
+  function getYouTubeEmbedUrl(url) {
+    if (!url || typeof url !== 'string' || url.trim() === '') return '';
+    url = url.trim();
+    // Match youtube.com/watch?v=ID or youtu.be/ID or youtube.com/embed/ID
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11)
+      ? `https://www.youtube-nocookie.com/embed/${match[2]}?rel=0&autoplay=0`
+      : '';
+  }
+
+  function openProjectModal(proj) {
+    if (!projectModalBackdrop) return;
+
+    modalProjCategory.textContent = proj.category || 'Featured Project';
+    modalProjTitle.textContent = proj.title;
+    modalProjDesc.textContent = proj.description;
+
+    // Tools & Stack
+    modalProjTools.innerHTML = (proj.tools || [])
+      .map((t) => `<span class="tag">${t}</span>`)
+      .join('');
+
+    // Screenshots Carousel
+    const images = Array.isArray(proj.screenshots) && proj.screenshots.length > 0
+      ? proj.screenshots
+      : (proj.thumbnail ? [proj.thumbnail] : []);
+
+    currentProjectScreenshots = images;
+    currentSlideIndex = 0;
+
+    if (images.length > 0) {
+      modalCarousel.style.display = 'block';
+      carouselActiveImg.src = images[0];
+
+      // Build indicators
+      if (carouselIndicators) {
+        carouselIndicators.innerHTML = images
+          .map((_, i) => `<span class="carousel-dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>`)
+          .join('');
+        
+        carouselIndicators.querySelectorAll('.carousel-dot').forEach((dot) => {
+          dot.addEventListener('click', (e) => {
+            const dotIdx = parseInt(e.target.dataset.index, 10);
+            updateCarouselSlide(dotIdx);
+          });
+        });
+      }
+
+      // Hide arrows if only 1 image
+      const showNav = images.length > 1;
+      if (carouselPrevBtn) carouselPrevBtn.style.display = showNav ? 'flex' : 'none';
+      if (carouselNextBtn) carouselNextBtn.style.display = showNav ? 'flex' : 'none';
+    } else {
+      modalCarousel.style.display = 'none';
+    }
+
+    // YouTube Video Embed (Strict Conditional)
+    const ytEmbedUrl = getYouTubeEmbedUrl(proj.youtubeUrl);
+    if (ytEmbedUrl && modalVideoWrap && modalYoutubeIframe) {
+      modalYoutubeIframe.src = ytEmbedUrl;
+      modalVideoWrap.style.display = 'block';
+    } else if (modalVideoWrap && modalYoutubeIframe) {
+      modalYoutubeIframe.src = '';
+      modalVideoWrap.style.display = 'none';
+    }
+
+    // Buttons
+    if (modalGithubBtn) {
+      modalGithubBtn.href = proj.githubUrl || 'https://github.com/abhishekhingmire';
+      const span = modalGithubBtn.querySelector('span');
+      if (span) span.textContent = 'GitHub ↗';
+    }
+    if (modalDemoBtn) {
+      modalDemoBtn.href = proj.demoUrl || proj.linkUrl || 'https://github.com/abhishekhingmire';
+      const span = modalDemoBtn.querySelector('span');
+      if (span) span.textContent = 'Live Demo ↗';
+    }
+
+    projectModalBackdrop.classList.add('active');
+    projectModalBackdrop.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeProjectModal() {
+    if (!projectModalBackdrop) return;
+    projectModalBackdrop.classList.remove('active');
+    projectModalBackdrop.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    if (modalYoutubeIframe) {
+      modalYoutubeIframe.src = ''; // stop audio immediately
+    }
+  }
+
+  if (carouselPrevBtn) {
+    carouselPrevBtn.addEventListener('click', () => updateCarouselSlide(currentSlideIndex - 1));
+  }
+  if (carouselNextBtn) {
+    carouselNextBtn.addEventListener('click', () => updateCarouselSlide(currentSlideIndex + 1));
+  }
+  if (modalCloseBtn) {
+    modalCloseBtn.addEventListener('click', closeProjectModal);
+  }
+  if (projectModalBackdrop) {
+    projectModalBackdrop.addEventListener('click', (e) => {
+      if (e.target === projectModalBackdrop) closeProjectModal();
+    });
+  }
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && projectModalBackdrop && projectModalBackdrop.classList.contains('active')) {
+      closeProjectModal();
+    }
+  });
+
   if (projectsContainer && Array.isArray(data.projects)) {
     projectsContainer.innerHTML = data.projects
-      .map(
-        (proj, idx) => `
-        <div class="proj-card reveal">
-          <div>
-            <div class="proj-index">Project 0${idx + 1} — ${proj.category || 'Featured'}</div>
-            <h3>${proj.title}</h3>
-            <p>${proj.description}</p>
-          </div>
-          <div>
-            <div class="proj-tags">
-              ${(proj.tools || []).map((t) => `<span>${t}</span>`).join('')}
+      .map((proj, idx) => {
+        const thumb = proj.thumbnail || (Array.isArray(proj.screenshots) && proj.screenshots[0]) || 'synaptiqo-thumb.svg';
+        const toolsHtml = (proj.tools || [])
+          .map((t) => `<span class="proj-tool-tag">${t}</span>`)
+          .join('');
+
+        return `
+          <div class="proj-card reveal" data-project-id="${proj.id || idx}">
+            <div class="proj-thumb-wrap">
+              <img src="${thumb}" alt="${proj.title}" class="proj-thumb-img" loading="lazy">
+              <div class="proj-thumb-overlay">
+                <span class="proj-category-pill">${proj.category || 'Data Analytics'}</span>
+              </div>
             </div>
-            <a class="proj-link" href="${proj.linkUrl || '#'}" target="_blank" rel="noopener noreferrer">
-              ${proj.linkText || 'Explore project →'}
-            </a>
+            <div class="proj-body">
+              <h3>${proj.title}</h3>
+              
+              <!-- Skills / Tools / Languages overview badges below title -->
+              <div class="proj-tools-overview">
+                ${toolsHtml}
+              </div>
+
+              <p class="proj-desc-preview">${proj.description}</p>
+              
+              <div class="proj-cta-row">
+                <span>View Full Details &amp; Demo</span>
+                <span>→</span>
+              </div>
+            </div>
           </div>
-        </div>
-      `
-      )
+        `;
+      })
       .join('');
+
+    // Attach click listeners to cards to open modal
+    projectsContainer.querySelectorAll('.proj-card').forEach((card, i) => {
+      card.addEventListener('click', () => {
+        const proj = data.projects[i];
+        if (proj) openProjectModal(proj);
+      });
+    });
   }
 
   // 7. Render Education & Certifications
@@ -212,36 +404,81 @@
       .join('');
   }
 
-  // 8. Render Contact Section & Footer
+  // 8. Render Section Headings Dynamically
+  if (data.sectionHeadings) {
+    const headingsMap = [
+      { id: 'heading-about', data: data.sectionHeadings.about },
+      { id: 'heading-skills', data: data.sectionHeadings.skills },
+      { id: 'heading-experience', data: data.sectionHeadings.experience },
+      { id: 'heading-projects', data: data.sectionHeadings.projects },
+      { id: 'heading-credentials', data: data.sectionHeadings.credentials },
+      { id: 'heading-contact', data: data.sectionHeadings.contact },
+      { id: 'heading-contact-headline', data: data.sectionHeadings.contactHeadline, isHtml: true }
+    ];
+
+    headingsMap.forEach(({ id, data: hData, isHtml }) => {
+      const el = document.getElementById(id);
+      if (el && hData) {
+        if (hData.text) {
+          if (isHtml) {
+            el.innerHTML = hData.text;
+          } else {
+            el.textContent = hData.text;
+          }
+        }
+        if (hData.size) {
+          el.style.fontSize = hData.size;
+        }
+      }
+    });
+  }
+
+  // 9. Render Clean Contact Buttons
   const contactLinksContainer = document.getElementById('contact-links');
-  if (contactLinksContainer && data.profile && data.profile.contact) {
-    const c = data.profile.contact;
-    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(c.email)}&su=${encodeURIComponent('Inquiry for Abhishek Hingmire — Data Analyst')}`;
-    const mailtoUrl = `mailto:${c.email}?subject=${encodeURIComponent('Inquiry for Abhishek Hingmire — Data Analyst')}`;
+  if (contactLinksContainer) {
+    const c = (data.profile && data.profile.contact) ? data.profile.contact : {};
+    
+    const email = (c.email && c.email.trim() !== '') ? c.email.trim() : 'abhishekhingmire2171@gmail.com';
+    const emailText = (c.emailLabel && c.emailLabel.trim() !== '') ? c.emailLabel.trim() : email;
+
+    const phone = (c.phone && c.phone.trim() !== '') ? c.phone.trim() : '+91-8623921350';
+    const phoneDisplay = (c.phoneDisplay && c.phoneDisplay.trim() !== '') ? c.phoneDisplay.trim() : '+91 86239 21350';
+    const phoneText = (c.phoneLabel && c.phoneLabel.trim() !== '') ? c.phoneLabel.trim() : phoneDisplay;
+
+    const linkedin = (c.linkedin && c.linkedin.trim() !== '') ? c.linkedin.trim() : 'https://www.linkedin.com/in/abhishek-hingmire';
+    const linkedinText = (c.linkedinLabel && c.linkedinLabel.trim() !== '') ? c.linkedinLabel.trim() : 'LinkedIn ↗';
+
+    const github = (c.github && c.github.trim() !== '') ? c.github.trim() : 'https://github.com/abhishekhingmire';
+    const githubText = (c.githubLabel && c.githubLabel.trim() !== '') ? c.githubLabel.trim() : 'GitHub ↗';
+
+    const subject = encodeURIComponent(`Inquiry for ${data.profile?.fullName || 'Abhishek Hingmire'} — Data Analyst`);
+    const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${subject}`;
+    const mailtoUrl = `mailto:${email}?subject=${subject}`;
 
     contactLinksContainer.innerHTML = `
-      <a href="${gmailComposeUrl}" id="email-link" target="_blank" rel="noopener noreferrer" title="Open in Gmail with prefilled recipient">
-        ✉ ${c.email}
+      <a href="${gmailComposeUrl}" id="email-contact-btn" target="_blank" rel="noopener noreferrer" class="contact-pill-btn" title="Open Gmail Compose directly to ${email}">
+        ✉️ <span>${emailText}</span>
       </a>
-      <a href="tel:${c.phone}" title="Call directly">
-        📞 ${c.phoneDisplay || c.phone}
+
+      <a href="tel:${phone}" class="contact-pill-btn" title="Call directly on ${phoneDisplay}">
+        📞 <span>${phoneText}</span>
       </a>
-      <a href="${c.linkedin}" target="_blank" rel="noopener noreferrer">
-        LinkedIn ↗
+
+      <a href="${linkedin}" target="_blank" rel="noopener noreferrer" class="contact-pill-btn" title="Open LinkedIn Profile">
+        💼 <span>${linkedinText}</span>
       </a>
-      <a href="${c.github}" target="_blank" rel="noopener noreferrer">
-        GitHub ↗
+
+      <a href="${github}" target="_blank" rel="noopener noreferrer" class="contact-pill-btn" title="Open GitHub Profile">
+        🚀 <span>${githubText}</span>
       </a>
     `;
 
-    // Smart email handler for mobile & desktop
-    const emailLink = document.getElementById('email-link');
-    if (emailLink) {
-      emailLink.addEventListener('click', (e) => {
-        // Detect if mobile device
+    // Smart email click handler for mobile
+    const emailBtn = document.getElementById('email-contact-btn');
+    if (emailBtn) {
+      emailBtn.addEventListener('click', (e) => {
         const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
         if (isMobile) {
-          // On mobile, try mailto scheme which prompts Gmail App / Default Email App with TO prefilled
           window.location.href = mailtoUrl;
           e.preventDefault();
         }
@@ -252,6 +489,53 @@
   const footerCopyright = document.getElementById('footer-copyright');
   if (footerCopyright && data.profile) {
     footerCopyright.textContent = `© ${new Date().getFullYear()} ${data.profile.fullName || 'Abhishek Hingmire'}`;
+  }
+
+  // Dynamic Floating Resume Direct Download Button
+  const floatingResumeBtn = document.getElementById('floating-resume-badge');
+  const resumeBadgeText = document.getElementById('resume-badge-text');
+  if (floatingResumeBtn) {
+    const resumeUrl = data.profile?.resumeUrl;
+    if (resumeUrl && resumeUrl.trim() !== '') {
+      floatingResumeBtn.style.display = 'flex';
+      floatingResumeBtn.setAttribute('download', 'Abhishek_Hingmire_Resume.pdf');
+      floatingResumeBtn.href = resumeUrl;
+      
+      if (resumeBadgeText) {
+        resumeBadgeText.textContent = data.profile.resumeButtonText || 'Download Resume';
+      }
+
+      // Ensure reliable download even for Base64 Data URLs
+      floatingResumeBtn.onclick = function (e) {
+        if (resumeUrl.startsWith('data:')) {
+          e.preventDefault();
+          try {
+            const arr = resumeUrl.split(',');
+            const mime = arr[0].match(/:(.*?);/)[1];
+            const bstr = atob(arr[1]);
+            let n = bstr.length;
+            const u8arr = new Uint8Array(n);
+            while (n--) {
+              u8arr[n] = bstr.charCodeAt(n);
+            }
+            const blob = new Blob([u8arr], { type: mime });
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = 'Abhishek_Hingmire_Resume.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 1000);
+          } catch (err) {
+            window.open(resumeUrl, '_blank');
+          }
+        }
+      };
+    } else {
+      // Automatically hide button if no resume is set in admin
+      floatingResumeBtn.style.display = 'none';
+    }
   }
 
   // 9. Interactive Cursor Glow

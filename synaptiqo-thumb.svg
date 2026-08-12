@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" width="800" height="480">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0c10"/>
+      <stop offset="50%" stop-color="#121620"/>
+      <stop offset="100%" stop-color="#08090d"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e8cf99"/>
+      <stop offset="100%" stop-color="#c9a664"/>
+    </linearGradient>
+    <linearGradient id="teal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4fd1c5"/>
+      <stop offset="100%" stop-color="#319795"/>
+    </linearGradient>
+    <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+      <path d="M 30 0 L 0 0 0 30" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/>
+    </pattern>
+  </defs>
+
+  <!-- Background -->
+  <rect width="800" height="480" fill="url(#bg)"/>
+  <rect width="800" height="480" fill="url(#grid)"/>
+
+  <!-- Glowing background blobs -->
+  <circle cx="200" cy="180" r="140" fill="#4fd1c5" opacity="0.08" filter="blur(60px)"/>
+  <circle cx="620" cy="300" r="160" fill="#c9a664" opacity="0.08" filter="blur(70px)"/>
+
+  <!-- Code/Pipeline Interface Mockup -->
+  <rect x="60" y="50" width="680" height="380" rx="12" fill="#0e1117" stroke="rgba(201,166,100,0.25)" stroke-width="1.5"/>
+  
+  <!-- Window Header -->
+  <rect x="60" y="50" width="680" height="42" rx="12" fill="#141822"/>
+  <rect x="60" y="80" width="680" height="12" fill="#141822"/>
+  <circle cx="85" cy="71" r="5" fill="#e05252"/>
+  <circle cx="103" cy="71" r="5" fill="#e0a352"/>
+  <circle cx="121" cy="71" r="5" fill="#48bb78"/>
+  <text x="400" y="75" fill="#8892b0" font-family="'JetBrains Mono', monospace" font-size="12" text-anchor="middle">synaptiqo-pipeline // ETL &amp; Document Intelligence</text>
+
+  <!-- Left Sidebar Node Graph -->
+  <rect x="80" y="110" width="180" height="300" rx="8" fill="#121620" stroke="rgba(255,255,255,0.05)"/>
+  <text x="100" y="140" fill="#c9a664" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="bold">PIPELINE NODES</text>
+  
+  <rect x="95" y="160" width="150" height="34" rx="6" fill="#1a202c" stroke="url(#teal)" stroke-width="1"/>
+  <text x="110" y="181" fill="#4fd1c5" font-family="'JetBrains Mono', monospace" font-size="10">⚡ Ingestion (FastAPI)</text>
+
+  <rect x="95" y="206" width="150" height="34" rx="6" fill="#1a202c" stroke="rgba(255,255,255,0.1)"/>
+  <text x="110" y="227" fill="#cbd5e0" font-family="'JetBrains Mono', monospace" font-size="10">📄 OCR Extraction</text>
+
+  <rect x="95" y="252" width="150" height="34" rx="6" fill="#1a202c" stroke="url(#gold)" stroke-width="1"/>
+  <text x="110" y="273" fill="#e8cf99" font-family="'JetBrains Mono', monospace" font-size="10">🧠 Vector Embedding</text>
+
+  <rect x="95" y="298" width="150" height="34" rx="6" fill="#1a202c" stroke="rgba(255,255,255,0.1)"/>
+  <text x="110" y="319" fill="#cbd5e0" font-family="'JetBrains Mono', monospace" font-size="10">🗄️ PostgreSQL Sync</text>
+
+  <rect x="95" y="344" width="150" height="34" rx="6" fill="#1a202c" stroke="rgba(72,187,120,0.5)"/>
+  <text x="110" y="365" fill="#48bb78" font-family="'JetBrains Mono', monospace" font-size="10">✓ HITL Validation</text>
+
+  <!-- Right Main Area Metrics & Console -->
+  <rect x="280" y="110" width="440" height="150" rx="8" fill="#121620" stroke="rgba(255,255,255,0.05)"/>
+  <text x="300" y="140" fill="#e8cf99" font-family="'Fraunces', serif" font-size="18">Adaptive Extraction Metrics</text>
+  
+  <rect x="300" y="160" width="120" height="80" rx="6" fill="#181e2b"/>
+  <text x="315" y="185" fill="#8892b0" font-family="'JetBrains Mono', monospace" font-size="10">DOCS PROCESSED</text>
+  <text x="315" y="218" fill="#4fd1c5" font-family="'Fraunces', serif" font-size="24" font-weight="bold">142,850+</text>
+
+  <rect x="440" y="160" width="120" height="80" rx="6" fill="#181e2b"/>
+  <text x="455" y="185" fill="#8892b0" font-family="'JetBrains Mono', monospace" font-size="10">ACCURACY</text>
+  <text x="455" y="218" fill="#e8cf99" font-family="'Fraunces', serif" font-size="24" font-weight="bold">99.4%</text>
+
+  <rect x="580" y="160" width="120" height="80" rx="6" fill="#181e2b"/>
+  <text x="595" y="185" fill="#8892b0" font-family="'JetBrains Mono', monospace" font-size="10">LATENCY</text>
+  <text x="595" y="218" fill="#48bb78" font-family="'Fraunces', serif" font-size="24" font-weight="bold">185ms</text>
+
+  <!-- Console Log Terminal -->
+  <rect x="280" y="275" width="440" height="135" rx="8" fill="#090b0e" stroke="rgba(201,166,100,0.15)"/>
+  <text x="295" y="300" fill="#4fd1c5" font-family="'JetBrains Mono', monospace" font-size="10">> [INFO] Asynchronous queue worker initiated (Docker cluster)</text>
+  <text x="295" y="320" fill="#cbd5e0" font-family="'JetBrains Mono', monospace" font-size="10">> [ETL] Vector embedding generated in ChromaDB (cosine_sim: 0.984)</text>
+  <text x="295" y="340" fill="#e8cf99" font-family="'JetBrains Mono', monospace" font-size="10">> [POSTGRES] ACID batch upsert completed: 1,200 entities parsed</text>
+  <text x="295" y="360" fill="#48bb78" font-family="'JetBrains Mono', monospace" font-size="10">> [READY] Synaptiqo microservice online · Status: Healthy (200 OK)</text>
+</svg>

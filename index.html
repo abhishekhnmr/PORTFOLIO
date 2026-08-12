@@ -81,7 +81,7 @@
   <section id="about">
     <div class="section-head reveal">
       <span class="section-num">01</span>
-      <h2 class="section-title">About Me</h2>
+      <h2 class="section-title" id="heading-about">About Me</h2>
     </div>
     <div class="about-grid">
       <!-- Left: Profile Picture Box -->
@@ -113,7 +113,7 @@
   <section id="skills">
     <div class="section-head reveal">
       <span class="section-num">02</span>
-      <h2 class="section-title">Skills & Core Stack</h2>
+      <h2 class="section-title" id="heading-skills">Skills &amp; Core Stack</h2>
     </div>
     <div class="skills-wrap reveal">
       <div class="marquee" id="skills-marquee">
@@ -129,7 +129,7 @@
   <section id="experience">
     <div class="section-head reveal">
       <span class="section-num">03</span>
-      <h2 class="section-title">Experience</h2>
+      <h2 class="section-title" id="heading-experience">Experience</h2>
     </div>
     <div class="timeline reveal" id="experience-timeline">
       <!-- Injected via app.js -->
@@ -140,7 +140,7 @@
   <section id="projects">
     <div class="section-head reveal">
       <span class="section-num">04</span>
-      <h2 class="section-title">Selected Work & Projects</h2>
+      <h2 class="section-title" id="heading-projects">Selected Work &amp; Projects</h2>
     </div>
     <div class="projects-grid" id="projects-grid">
       <!-- Injected via app.js -->
@@ -151,7 +151,7 @@
   <section id="credentials">
     <div class="section-head reveal">
       <span class="section-num">05</span>
-      <h2 class="section-title">Education & Credentials</h2>
+      <h2 class="section-title" id="heading-credentials">Education &amp; Credentials</h2>
     </div>
     <div class="credentials-grid reveal">
       <div class="cred-card">
@@ -173,9 +173,9 @@
   <section id="contact" class="contact-section">
     <div class="section-head reveal">
       <span class="section-num">06</span>
-      <h2 class="section-title">Contact</h2>
+      <h2 class="section-title" id="heading-contact">Contact</h2>
     </div>
-    <h3 class="contact-title reveal">Let's turn complex data into <em>actionable insights.</em></h3>
+    <h3 class="contact-title reveal" id="heading-contact-headline">Let's turn complex data into <em>actionable insights.</em></h3>
     <div class="contact-links reveal" id="contact-links">
       <!-- Injected via app.js -->
     </div>
@@ -186,6 +186,72 @@
     <span id="footer-copyright">© 2026 Abhishek Hingmire</span>
     <span>Data Analyst & BI Specialist · Built with Luxury Aesthetic</span>
   </footer>
+
+  <!-- FLOATING RESUME BUTTON (Direct Instant Download) -->
+  <a href="Abhishek_Hingmire_Resume.pdf" download="Abhishek_Hingmire_Resume.pdf" class="floating-resume-badge" id="floating-resume-badge" title="Download Abhishek Hingmire's Resume PDF">
+    <span>📥</span>
+    <span id="resume-badge-text">Download Resume</span>
+    <span class="resume-arrow">↓</span>
+  </a>
+
+  <!-- PROJECT DETAILS MODAL & CAROUSEL -->
+  <div class="project-modal-backdrop" id="project-modal-backdrop" aria-hidden="true">
+    <div class="project-modal-dialog" role="dialog" aria-labelledby="modal-proj-title">
+      <button type="button" class="modal-close-btn" id="modal-close-btn" aria-label="Close Project Details">✕</button>
+      
+      <!-- Modal Header -->
+      <div class="modal-header">
+        <span class="modal-category" id="modal-proj-category">Full Stack &amp; AI Data Pipeline</span>
+        <h2 class="modal-title" id="modal-proj-title">Project Title</h2>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="modal-body">
+        <!-- Media Area: Carousel & YouTube -->
+        <div class="modal-media-area">
+          <!-- Image Carousel -->
+          <div class="modal-carousel" id="modal-carousel">
+            <div class="carousel-track-wrap">
+              <img id="carousel-active-img" src="" alt="Project Screenshot" class="carousel-img">
+            </div>
+            <button type="button" class="carousel-nav-btn prev" id="carousel-prev-btn" aria-label="Previous image">‹</button>
+            <button type="button" class="carousel-nav-btn next" id="carousel-next-btn" aria-label="Next image">›</button>
+            <div class="carousel-indicators" id="carousel-indicators"></div>
+          </div>
+
+          <!-- YouTube Video Embed Area (Conditional) -->
+          <div class="modal-video-wrap" id="modal-video-wrap" style="display:none;">
+            <div class="video-label">🎥 Video Presentation / Demo</div>
+            <div class="video-iframe-container">
+              <iframe id="modal-youtube-iframe" src="" title="Project Video Presentation" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+            </div>
+          </div>
+        </div>
+
+        <!-- Project Overview & Narrative -->
+        <div class="modal-section">
+          <h4 class="modal-section-heading">Project Overview &amp; Architecture</h4>
+          <p class="modal-desc" id="modal-proj-desc"></p>
+        </div>
+
+        <!-- Skills, Tools & Stack -->
+        <div class="modal-section">
+          <h4 class="modal-section-heading">Skills, Tools &amp; Technologies Used</h4>
+          <div class="tags-container" id="modal-proj-tools"></div>
+        </div>
+
+        <!-- Modal Footer Actions -->
+        <div class="modal-footer-actions" id="modal-footer-actions">
+          <a href="#" id="modal-github-btn" target="_blank" rel="noopener noreferrer" class="contact-pill-btn">
+            🚀 <span>GitHub ↗</span>
+          </a>
+          <a href="#" id="modal-demo-btn" target="_blank" rel="noopener noreferrer" class="contact-pill-btn">
+            ⚡ <span>Live Demo ↗</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- SCRIPTS -->
   <script src="data.js"></script>

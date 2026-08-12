@@ -5,17 +5,31 @@
   let currentData = {};
 
   function loadData() {
+    const defaults = JSON.parse(JSON.stringify(window.DEFAULT_PORTFOLIO_DATA || {}));
     try {
       const stored = localStorage.getItem('portfolio_data');
       if (stored) {
-        currentData = JSON.parse(stored);
-        return;
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object') {
+          currentData = {
+            ...defaults,
+            ...parsed,
+            profile: {
+              ...(defaults.profile || {}),
+              ...(parsed.profile || {}),
+              contact: {
+                ...(defaults.profile?.contact || {}),
+                ...(parsed.profile?.contact || {})
+              }
+            }
+          };
+          return;
+        }
       }
     } catch (e) {
       console.warn('Error reading from localStorage:', e);
     }
-    // Deep clone default data
-    currentData = JSON.parse(JSON.stringify(window.DEFAULT_PORTFOLIO_DATA || {}));
+    currentData = defaults;
   }
 
   function saveData(showFeedback = true) {
@@ -71,6 +85,12 @@
     document.getElementById('input-photoBadge').value = currentData.profile.photoBadge || '';
     document.getElementById('input-roles').value = (currentData.profile.roles || []).join('\n');
 
+    // Resume Management
+    const resumeUrl = currentData.profile.resumeUrl || '';
+    document.getElementById('input-resume-url').value = resumeUrl;
+    document.getElementById('input-resume-label').value = currentData.profile.resumeButtonText || 'Download Resume';
+    updateResumeStatus(resumeUrl);
+
     // Hero Meta (3 items)
     const meta = currentData.profile.heroMeta || [];
     document.getElementById('input-meta1-title').value = meta[0]?.title || '';
@@ -110,14 +130,37 @@
 
     // 7. Contact
     const contact = currentData.profile.contact || {};
-    document.getElementById('input-email').value = contact.email || '';
-    document.getElementById('input-phone').value = contact.phone || '';
-    document.getElementById('input-phoneDisplay').value = contact.phoneDisplay || '';
-    document.getElementById('input-location').value = contact.location || '';
-    document.getElementById('input-linkedin').value = contact.linkedin || '';
-    document.getElementById('input-github').value = contact.github || '';
+    document.getElementById('input-email').value = contact.email || 'abhishekhingmire2171@gmail.com';
+    document.getElementById('input-emailLabel').value = contact.emailLabel || contact.email || 'abhishekhingmire2171@gmail.com';
+    document.getElementById('input-phone').value = contact.phone || '+91-8623921350';
+    document.getElementById('input-phoneLabel').value = contact.phoneLabel || contact.phoneDisplay || '+91 86239 21350';
+    document.getElementById('input-phoneDisplay').value = contact.phoneDisplay || '+91 86239 21350';
+    document.getElementById('input-location').value = contact.location || 'Mumbai, India';
+    document.getElementById('input-linkedin').value = contact.linkedin || 'https://www.linkedin.com/in/abhishek-hingmire';
+    document.getElementById('input-linkedinLabel').value = contact.linkedinLabel || 'LinkedIn ↗';
+    document.getElementById('input-github').value = contact.github || 'https://github.com/abhishekhingmire';
+    document.getElementById('input-githubLabel').value = contact.githubLabel || 'GitHub ↗';
 
-    // 8. Customization & Theme
+    // 8. Section Headings & Typography
+    const headings = currentData.sectionHeadings || {};
+    if (document.getElementById('input-heading-about-text')) {
+      document.getElementById('input-heading-about-text').value = headings.about?.text || 'About Me';
+      document.getElementById('input-heading-about-size').value = headings.about?.size || '2.5rem';
+      document.getElementById('input-heading-skills-text').value = headings.skills?.text || 'Skills & Core Stack';
+      document.getElementById('input-heading-skills-size').value = headings.skills?.size || '2.5rem';
+      document.getElementById('input-heading-exp-text').value = headings.experience?.text || 'Experience';
+      document.getElementById('input-heading-exp-size').value = headings.experience?.size || '2.5rem';
+      document.getElementById('input-heading-proj-text').value = headings.projects?.text || 'Selected Work & Projects';
+      document.getElementById('input-heading-proj-size').value = headings.projects?.size || '2.5rem';
+      document.getElementById('input-heading-edu-text').value = headings.credentials?.text || 'Education & Credentials';
+      document.getElementById('input-heading-edu-size').value = headings.credentials?.size || '2.5rem';
+      document.getElementById('input-heading-contact-text').value = headings.contact?.text || 'Contact';
+      document.getElementById('input-heading-contact-size').value = headings.contact?.size || '2.5rem';
+      document.getElementById('input-heading-contactheadline-text').value = headings.contactHeadline?.text || "Let's turn complex data into <em>actionable insights.</em>";
+      document.getElementById('input-heading-contactheadline-size').value = headings.contactHeadline?.size || "clamp(2.2rem, 5.5vw, 4.2rem)";
+    }
+
+    // 9. Customization & Theme
     const cust = currentData.customization || {};
     document.getElementById('input-accent-color').value = cust.accentColor || '#c9a664';
     document.getElementById('input-accent-teal').value = cust.accentTeal || '#4fd1c5';
@@ -299,6 +342,20 @@
     (currentData.projects || []).forEach((proj, idx) => {
       const card = document.createElement('div');
       card.className = 'card-item';
+      const screenshotsArr = Array.isArray(proj.screenshots) ? proj.screenshots : (proj.thumbnail ? [proj.thumbnail] : []);
+      const screenshotsStr = screenshotsArr.join(', ');
+
+      const ssChipsHtml = screenshotsArr
+        .map(
+          (ss, sIdx) => `
+        <div class="ss-thumb-chip">
+          <img src="${ss}" alt="Screenshot ${sIdx + 1}" />
+          <button type="button" class="ss-del-btn" data-action="delete-ss" data-proj-index="${idx}" data-ss-index="${sIdx}" title="Remove screenshot">✖</button>
+        </div>
+      `
+        )
+        .join('');
+
       card.innerHTML = `
         <div class="card-item-header">
           <span class="card-item-title">${proj.title || 'Project'}</span>
@@ -306,34 +363,77 @@
         </div>
         <div class="form-grid">
           <div class="form-group">
-            <label>Project Title</label>
-            <input type="text" class="proj-title" data-index="${idx}" value="${proj.title || ''}">
+            <label>Project Title / Name</label>
+            <input type="text" class="proj-title" data-index="${idx}" value="${proj.title || ''}" placeholder="e.g. Synaptiqo Platform">
           </div>
           <div class="form-group">
             <label>Category / Domain</label>
             <input type="text" class="proj-cat" data-index="${idx}" value="${proj.category || ''}" placeholder="Full Stack & AI Data Pipeline">
           </div>
+
           <div class="form-group full-width">
-            <label>Project Description</label>
-            <textarea class="proj-desc" data-index="${idx}" rows="3">${proj.description || ''}</textarea>
+            <label>Skills / Tools / Languages Used (Comma-separated — Visible on Project Card & Modal)</label>
+            <input type="text" class="proj-tools" data-index="${idx}" value="${(proj.tools || []).join(', ')}" placeholder="Python, SQL, Power BI, DAX, PostgreSQL, Docker">
+            <span class="help-text">These appear as stylish tags on the project card overview and in the project details view.</span>
           </div>
+
+          <div class="form-group">
+            <label>Main Thumbnail URL / Path</label>
+            <input type="text" class="proj-thumb" data-index="${idx}" value="${proj.thumbnail || ''}" placeholder="synaptiqo-thumb.svg or image URL">
+          </div>
+
+          <div class="form-group">
+            <label>Upload Single Thumbnail Image</label>
+            <input type="file" class="proj-thumb-file" data-index="${idx}" accept="image/*">
+            <span class="help-text">Select image file to set as main card cover.</span>
+          </div>
+
           <div class="form-group full-width">
-            <label>Tools & Technologies (Comma-separated)</label>
-            <input type="text" class="proj-tools" data-index="${idx}" value="${(proj.tools || []).join(', ')}" placeholder="Python, FastAPI, PostgreSQL, Power BI">
+            <label>📤 Upload Multiple Screenshots (Direct Multi-File Selection)</label>
+            <input type="file" multiple class="proj-multi-ss-files" data-index="${idx}" accept="image/*">
+            <span class="help-text">Hold Ctrl / Shift to select multiple image files directly from your computer!</span>
+            
+            ${screenshotsArr.length > 0 ? `
+              <div style="margin-top:12px;">
+                <div style="font-size:12px; font-family:var(--font-mono); color:var(--champagne); margin-bottom:6px;">Current Screenshots Gallery (${screenshotsArr.length}):</div>
+                <div class="ss-gallery-wrap">
+                  ${ssChipsHtml}
+                </div>
+              </div>
+            ` : ''}
           </div>
-          <div class="form-group">
-            <label>Link Button Label</label>
-            <input type="text" class="proj-linktext" data-index="${idx}" value="${proj.linkText || 'View project →'}">
+
+          <div class="form-group full-width">
+            <label>Additional Screenshots Paths (Manual Comma-separated Edit)</label>
+            <textarea class="proj-screenshots" data-index="${idx}" rows="2" placeholder="synaptiqo-thumb.svg, https://...">${screenshotsStr}</textarea>
           </div>
+
+          <div class="form-group full-width">
+            <label>🎥 YouTube Video Presentation Link (Optional)</label>
+            <input type="url" class="proj-youtube" data-index="${idx}" value="${proj.youtubeUrl || ''}" placeholder="https://www.youtube.com/watch?v=... or https://youtu.be/...">
+            <span class="help-text">Paste YouTube link to embed a playable video in project details. If left blank, no video will appear.</span>
+          </div>
+
+          <div class="form-group full-width">
+            <label>Detailed Project Description</label>
+            <textarea class="proj-desc" data-index="${idx}" rows="4" placeholder="Explain the problem statement, pipeline architecture, data validation, and business results...">${proj.description || ''}</textarea>
+          </div>
+
           <div class="form-group">
-            <label>Link URL</label>
-            <input type="url" class="proj-linkurl" data-index="${idx}" value="${proj.linkUrl || '#'}">
+            <label>GitHub Repository URL</label>
+            <input type="url" class="proj-github" data-index="${idx}" value="${proj.githubUrl || proj.linkUrl || 'https://github.com/abhishekhingmire'}">
+          </div>
+
+          <div class="form-group">
+            <label>Live Demo / Case Study URL</label>
+            <input type="url" class="proj-demo" data-index="${idx}" value="${proj.demoUrl || proj.linkUrl || 'https://github.com/abhishekhingmire'}">
           </div>
         </div>
       `;
       container.appendChild(card);
     });
 
+    // Event Bindings
     container.querySelectorAll('.proj-title').forEach((input) => {
       input.addEventListener('input', (e) => {
         currentData.projects[e.target.dataset.index].title = e.target.value;
@@ -344,11 +444,6 @@
         currentData.projects[e.target.dataset.index].category = e.target.value;
       });
     });
-    container.querySelectorAll('.proj-desc').forEach((input) => {
-      input.addEventListener('input', (e) => {
-        currentData.projects[e.target.dataset.index].description = e.target.value;
-      });
-    });
     container.querySelectorAll('.proj-tools').forEach((input) => {
       input.addEventListener('input', (e) => {
         currentData.projects[e.target.dataset.index].tools = e.target.value
@@ -357,16 +452,108 @@
           .filter(Boolean);
       });
     });
-    container.querySelectorAll('.proj-linktext').forEach((input) => {
+    container.querySelectorAll('.proj-thumb').forEach((input) => {
       input.addEventListener('input', (e) => {
-        currentData.projects[e.target.dataset.index].linkText = e.target.value;
+        currentData.projects[e.target.dataset.index].thumbnail = e.target.value;
       });
     });
-    container.querySelectorAll('.proj-linkurl').forEach((input) => {
-      input.addEventListener('input', (e) => {
-        currentData.projects[e.target.dataset.index].linkUrl = e.target.value;
+    container.querySelectorAll('.proj-thumb-file').forEach((input) => {
+      input.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        const i = e.target.dataset.index;
+        const reader = new FileReader();
+        reader.onload = function (ev) {
+          currentData.projects[i].thumbnail = ev.target.result;
+          if (!Array.isArray(currentData.projects[i].screenshots)) {
+            currentData.projects[i].screenshots = [];
+          }
+          if (currentData.projects[i].screenshots.length === 0) {
+            currentData.projects[i].screenshots.push(ev.target.result);
+          } else {
+            currentData.projects[i].screenshots[0] = ev.target.result;
+          }
+          renderProjectsList();
+          showToast('✓ Project thumbnail uploaded! Click "Save All Changes" to publish.');
+        };
+        reader.readAsDataURL(file);
       });
     });
+
+    // Direct Multiple Screenshots File Upload Handler
+    container.querySelectorAll('.proj-multi-ss-files').forEach((input) => {
+      input.addEventListener('change', (e) => {
+        const files = Array.from(e.target.files || []);
+        if (files.length === 0) return;
+        const projIdx = parseInt(e.target.dataset.index, 10);
+        if (!Array.isArray(currentData.projects[projIdx].screenshots)) {
+          currentData.projects[projIdx].screenshots = [];
+        }
+
+        const readPromises = files.map((file) => {
+          return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = (ev) => resolve(ev.target.result);
+            reader.readAsDataURL(file);
+          });
+        });
+
+        Promise.all(readPromises).then((results) => {
+          results.forEach((dataUrl) => {
+            currentData.projects[projIdx].screenshots.push(dataUrl);
+          });
+          // Also set thumbnail if empty
+          if (!currentData.projects[projIdx].thumbnail && results[0]) {
+            currentData.projects[projIdx].thumbnail = results[0];
+          }
+          renderProjectsList();
+          showToast(`✓ ${results.length} screenshots uploaded! Click "Save All Changes" to publish.`);
+        });
+      });
+    });
+
+    // Delete single screenshot chip
+    container.querySelectorAll('[data-action="delete-ss"]').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        const pIdx = parseInt(e.target.dataset.projIndex, 10);
+        const sIdx = parseInt(e.target.dataset.ssIndex, 10);
+        if (Array.isArray(currentData.projects[pIdx]?.screenshots)) {
+          currentData.projects[pIdx].screenshots.splice(sIdx, 1);
+          renderProjectsList();
+          showToast('Screenshot removed.');
+        }
+      });
+    });
+
+    container.querySelectorAll('.proj-screenshots').forEach((input) => {
+      input.addEventListener('input', (e) => {
+        currentData.projects[e.target.dataset.index].screenshots = e.target.value
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+      });
+    });
+    container.querySelectorAll('.proj-youtube').forEach((input) => {
+      input.addEventListener('input', (e) => {
+        currentData.projects[e.target.dataset.index].youtubeUrl = e.target.value.trim();
+      });
+    });
+    container.querySelectorAll('.proj-desc').forEach((input) => {
+      input.addEventListener('input', (e) => {
+        currentData.projects[e.target.dataset.index].description = e.target.value;
+      });
+    });
+    container.querySelectorAll('.proj-github').forEach((input) => {
+      input.addEventListener('input', (e) => {
+        currentData.projects[e.target.dataset.index].githubUrl = e.target.value;
+      });
+    });
+    container.querySelectorAll('.proj-demo').forEach((input) => {
+      input.addEventListener('input', (e) => {
+        currentData.projects[e.target.dataset.index].demoUrl = e.target.value;
+      });
+    });
+
     container.querySelectorAll('[data-action="delete-proj"]').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         const i = parseInt(e.target.dataset.index, 10);
@@ -383,11 +570,14 @@
       currentData.projects.push({
         id: 'proj-' + Date.now(),
         title: 'New Analytics Project',
-        category: 'Business Intelligence',
-        description: 'Description of key objectives, ETL methodology, insights generated, and business value delivered.',
+        category: 'Business Intelligence & Python',
+        thumbnail: 'synaptiqo-thumb.svg',
+        screenshots: ['synaptiqo-thumb.svg'],
+        description: 'Detailed description of the project pipeline, dataset insights, and business outcomes.',
         tools: ['Python', 'SQL', 'Power BI'],
-        linkText: 'View project details →',
-        linkUrl: 'https://github.com/abhishekhingmire'
+        youtubeUrl: '',
+        githubUrl: 'https://github.com/abhishekhingmire',
+        demoUrl: 'https://github.com/abhishekhingmire'
       });
       renderProjectsList();
     });
@@ -548,6 +738,8 @@
     currentData.profile.eyebrow = document.getElementById('input-eyebrow').value;
     currentData.profile.photo = document.getElementById('input-photo').value;
     currentData.profile.photoBadge = document.getElementById('input-photoBadge').value;
+    currentData.profile.resumeUrl = document.getElementById('input-resume-url').value.trim();
+    currentData.profile.resumeButtonText = document.getElementById('input-resume-label').value.trim() || 'Download Resume';
     currentData.profile.roles = document
       .getElementById('input-roles')
       .value.split('\n')
@@ -600,12 +792,50 @@
 
     // Contact
     if (!currentData.profile.contact) currentData.profile.contact = {};
-    currentData.profile.contact.email = document.getElementById('input-email').value;
-    currentData.profile.contact.phone = document.getElementById('input-phone').value;
-    currentData.profile.contact.phoneDisplay = document.getElementById('input-phoneDisplay').value;
-    currentData.profile.contact.location = document.getElementById('input-location').value;
-    currentData.profile.contact.linkedin = document.getElementById('input-linkedin').value;
-    currentData.profile.contact.github = document.getElementById('input-github').value;
+    currentData.profile.contact.email = document.getElementById('input-email').value.trim() || 'abhishekhingmire2171@gmail.com';
+    currentData.profile.contact.emailLabel = document.getElementById('input-emailLabel').value.trim() || currentData.profile.contact.email;
+    currentData.profile.contact.phone = document.getElementById('input-phone').value.trim() || '+91-8623921350';
+    currentData.profile.contact.phoneLabel = document.getElementById('input-phoneLabel').value.trim() || '+91 86239 21350';
+    currentData.profile.contact.phoneDisplay = document.getElementById('input-phoneDisplay').value.trim() || '+91 86239 21350';
+    currentData.profile.contact.location = document.getElementById('input-location').value.trim() || 'Mumbai, India';
+    currentData.profile.contact.linkedin = document.getElementById('input-linkedin').value.trim() || 'https://www.linkedin.com/in/abhishek-hingmire';
+    currentData.profile.contact.linkedinLabel = document.getElementById('input-linkedinLabel').value.trim() || 'LinkedIn ↗';
+    currentData.profile.contact.github = document.getElementById('input-github').value.trim() || 'https://github.com/abhishekhingmire';
+    currentData.profile.contact.githubLabel = document.getElementById('input-githubLabel').value.trim() || 'GitHub ↗';
+
+    // Section Headings & Typography
+    if (document.getElementById('input-heading-about-text')) {
+      currentData.sectionHeadings = {
+        about: {
+          text: document.getElementById('input-heading-about-text').value.trim() || 'About Me',
+          size: document.getElementById('input-heading-about-size').value.trim() || '2.5rem'
+        },
+        skills: {
+          text: document.getElementById('input-heading-skills-text').value.trim() || 'Skills & Core Stack',
+          size: document.getElementById('input-heading-skills-size').value.trim() || '2.5rem'
+        },
+        experience: {
+          text: document.getElementById('input-heading-exp-text').value.trim() || 'Experience',
+          size: document.getElementById('input-heading-exp-size').value.trim() || '2.5rem'
+        },
+        projects: {
+          text: document.getElementById('input-heading-proj-text').value.trim() || 'Selected Work & Projects',
+          size: document.getElementById('input-heading-proj-size').value.trim() || '2.5rem'
+        },
+        credentials: {
+          text: document.getElementById('input-heading-edu-text').value.trim() || 'Education & Credentials',
+          size: document.getElementById('input-heading-edu-size').value.trim() || '2.5rem'
+        },
+        contact: {
+          text: document.getElementById('input-heading-contact-text').value.trim() || 'Contact',
+          size: document.getElementById('input-heading-contact-size').value.trim() || '2.5rem'
+        },
+        contactHeadline: {
+          text: document.getElementById('input-heading-contactheadline-text').value.trim() || "Let's turn complex data into <em>actionable insights.</em>",
+          size: document.getElementById('input-heading-contactheadline-size').value.trim() || "clamp(2.2rem, 5.5vw, 4.2rem)"
+        }
+      };
+    }
 
     // Customization
     if (!currentData.customization) currentData.customization = {};
@@ -676,6 +906,54 @@
         saveData(false);
         showToast('✓ Portfolio successfully reset to default resume data!');
       }
+    });
+  }
+
+  // --- RESUME STATUS & EVENT HANDLERS ---
+  function updateResumeStatus(url) {
+    const badge = document.getElementById('resume-status-badge');
+    if (!badge) return;
+    if (url && url.trim() !== '') {
+      badge.textContent = '● Resume Active (Button Visible)';
+      badge.style.color = 'var(--success)';
+    } else {
+      badge.textContent = '○ No Resume (Button Hidden)';
+      badge.style.color = 'var(--muted)';
+    }
+  }
+
+  const resumeUrlInput = document.getElementById('input-resume-url');
+  if (resumeUrlInput) {
+    resumeUrlInput.addEventListener('input', (e) => {
+      updateResumeStatus(e.target.value.trim());
+    });
+  }
+
+  const removeResumeBtn = document.getElementById('btn-remove-resume');
+  if (removeResumeBtn) {
+    removeResumeBtn.addEventListener('click', () => {
+      if (document.getElementById('input-resume-url')) {
+        document.getElementById('input-resume-url').value = '';
+      }
+      currentData.profile.resumeUrl = '';
+      updateResumeStatus('');
+      showToast('✓ Resume cleared! Click "Save All Changes" to publish.');
+    });
+  }
+
+  const resumeFileInput = document.getElementById('input-resume-file');
+  if (resumeFileInput) {
+    resumeFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        document.getElementById('input-resume-url').value = ev.target.result;
+        currentData.profile.resumeUrl = ev.target.result;
+        updateResumeStatus(ev.target.result);
+        showToast('✓ Resume PDF loaded! Click "Save All Changes" to publish.');
+      };
+      reader.readAsDataURL(file);
     });
   }
 
