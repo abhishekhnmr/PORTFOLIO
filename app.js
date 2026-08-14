@@ -551,6 +551,7 @@
       floatingResumeBtn.style.display = 'none';
     }
   }
+}
 
   // Initial UI Render
   renderPortfolioUI(data);
@@ -735,9 +736,10 @@
     }
   });
 
-  if (logoEl) {
-    logoEl.style.cursor = 'pointer';
-    logoEl.addEventListener('dblclick', () => {
+  const secretLogoEl = document.getElementById('site-logo');
+  if (secretLogoEl) {
+    secretLogoEl.style.cursor = 'pointer';
+    secretLogoEl.addEventListener('dblclick', () => {
       window.location.href = 'admin.html';
     });
   }
