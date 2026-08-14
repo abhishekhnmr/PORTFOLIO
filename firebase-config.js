@@ -4,12 +4,12 @@
 
   // Default Firebase configuration (can be updated from Admin Dashboard -> Settings)
   const DEFAULT_FIREBASE_CONFIG = {
-    apiKey: "",
-    authDomain: "",
-    projectId: "",
-    storageBucket: "",
-    messagingSenderId: "",
-    appId: ""
+    apiKey: "AIzaSyDbrUuwb5vKR4WqiGXfDavhOBCnKf3ZiAE",
+    authDomain: "abhishek-portfolio-8f2d1.firebaseapp.com",
+    projectId: "abhishek-portfolio-8f2d1",
+    storageBucket: "abhishek-portfolio-8f2d1.firebasestorage.app",
+    messagingSenderId: "417150384879",
+    appId: "1:417150384879:web:5d62b2136a6c20fe2ff91a"
   };
 
   function getFirebaseConfig() {
