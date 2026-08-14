@@ -428,16 +428,58 @@
 
         <h3 style="font-family:var(--font-serif); font-size:1.3rem; color:var(--champagne); margin-bottom:16px;">Backup & Portability</h3>
         <p style="color:var(--muted); font-size:13.5px; margin-bottom:20px; line-height:1.6;">
-          Your changes are stored securely in your browser's local storage. You can export a full JSON backup file to carry your portfolio data across computers or deploy with hardcoded defaults.
+          Your changes are stored securely in your browser's local storage. To publish your changes to <strong>GitHub Pages so that all devices (phones, laptops, recruiters) see them</strong>, click <strong>"📥 Download Updated data.js"</strong> and replace the <code>data.js</code> file in your repository.
         </p>
 
         <div style="display:flex; flex-wrap:wrap; gap:16px; margin-bottom:40px;">
-          <button type="button" class="btn btn-outline" id="btn-export-json">📥 Download Backup JSON</button>
+          <button type="button" class="btn btn-primary" id="btn-export-datajs" style="background:var(--champagne); color:var(--ink); font-weight:600;">📥 Download Updated data.js (For GitHub Pages)</button>
+          <button type="button" class="btn btn-outline" id="btn-export-json">💾 Download Backup JSON</button>
           
           <label class="btn btn-outline" style="cursor:pointer; margin-bottom:0;">
             📤 Restore from JSON
             <input type="file" id="input-import-file" accept=".json" style="display:none;">
           </label>
+        </div>
+
+        <!-- FIREBASE CLOUD SYNC SETTINGS -->
+        <h3 style="font-family:var(--font-serif); font-size:1.3rem; color:var(--champagne); margin-bottom:12px;">🔥 Real-Time Cloud Database Sync (Firebase)</h3>
+        <p style="color:var(--muted); font-size:13.5px; margin-bottom:18px; line-height:1.6;">
+          Connect a free Google Firebase Firestore database so that whenever you make changes from <strong>any laptop or smartphone</strong>, the changes are saved to the cloud and instantly reflect for all visitors and all devices in real time.
+        </p>
+
+        <div style="background:var(--ink-2); border:1px solid var(--line); border-radius:var(--radius-sm); padding:24px; margin-bottom:36px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
+            <strong style="color:var(--off-white); font-size:14px;">Cloud Sync Status:</strong>
+            <span id="firebase-status-badge" style="font-family:var(--font-mono); font-size:12px; padding:4px 12px; border-radius:var(--radius-pill); background:rgba(255,255,255,0.05); color:var(--muted);">⚪ Checking status...</span>
+          </div>
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label>API Key</label>
+              <input type="text" id="fb-apiKey" placeholder="AIzaSy..." />
+            </div>
+            <div class="form-group">
+              <label>Project ID</label>
+              <input type="text" id="fb-projectId" placeholder="abhishek-portfolio" />
+            </div>
+            <div class="form-group">
+              <label>Auth Domain (Optional)</label>
+              <input type="text" id="fb-authDomain" placeholder="abhishek-portfolio.firebaseapp.com" />
+            </div>
+            <div class="form-group">
+              <label>Storage Bucket (Optional)</label>
+              <input type="text" id="fb-storageBucket" placeholder="abhishek-portfolio.appspot.com" />
+            </div>
+            <div class="form-group">
+              <label>App ID (Optional)</label>
+              <input type="text" id="fb-appId" placeholder="1:123456789:web:abcdef" />
+            </div>
+          </div>
+
+          <div style="display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;">
+            <button type="button" class="btn btn-outline" id="btn-save-firebase-config">💾 Connect &amp; Save Cloud Settings</button>
+            <button type="button" class="btn btn-outline" id="btn-sync-to-cloud" style="border-color:var(--champagne-dim); color:var(--champagne);">☁️ Push Current Data to Cloud Now</button>
+          </div>
         </div>
 
         <div style="border-top:1px solid var(--line); padding-top:24px;">
@@ -456,6 +498,9 @@
   <div class="admin-toast" id="admin-toast">✓ Saved successfully</div>
 
   <!-- SCRIPTS -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script src="data.js"></script>
   <script src="admin.js"></script>
 </body>

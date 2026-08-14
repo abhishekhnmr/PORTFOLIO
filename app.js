@@ -719,10 +719,19 @@
     }
   });
 
-  if (logoEl) {
-    logoEl.style.cursor = 'pointer';
-    logoEl.addEventListener('dblclick', () => {
-      window.location.href = 'admin.html';
+  // 16. Firebase Cloud Sync on page load (Auto-update if cloud data is newer)
+  if (typeof window.fetchCloudPortfolio === 'function' && window.isFirebaseConfigured && window.isFirebaseConfigured()) {
+    window.fetchCloudPortfolio().then((cloudData) => {
+      if (cloudData && typeof cloudData === 'object') {
+        const currentLocal = localStorage.getItem('portfolio_data');
+        const cloudStr = JSON.stringify(cloudData);
+        if (currentLocal !== cloudStr) {
+          localStorage.setItem('portfolio_data', cloudStr);
+          window.location.reload();
+        }
+      }
+    }).catch((err) => {
+      console.warn('Cloud sync check:', err);
     });
   }
 })();

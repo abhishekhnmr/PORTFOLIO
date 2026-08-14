@@ -55,9 +55,21 @@
     currentData = defaults;
   }
 
-  function saveData(showFeedback = true) {
+  async function saveData(showFeedback = true) {
     try {
       localStorage.setItem('portfolio_data', JSON.stringify(currentData));
+      
+      // Save to Firebase Cloud Firestore in real time if configured
+      if (typeof window.saveCloudPortfolio === 'function' && window.isFirebaseConfigured && window.isFirebaseConfigured()) {
+        const cloudRes = await window.saveCloudPortfolio(currentData);
+        if (cloudRes && cloudRes.success) {
+          if (showFeedback) {
+            showToast('✓ Saved locally & Synced to Cloud Firestore in real time!');
+          }
+          return;
+        }
+      }
+
       if (showFeedback) {
         showToast('✓ All changes saved successfully! Live portfolio updated.');
       }
@@ -894,6 +906,25 @@
     });
   }
 
+  // --- EXPORT DATA.JS (FOR GITHUB / ALL DEVICES) ---
+  const exportDataJsBtn = document.getElementById('btn-export-datajs');
+  if (exportDataJsBtn) {
+    exportDataJsBtn.addEventListener('click', () => {
+      collectFormValues();
+      const fileContent = '// Master Portfolio Data for Abhishek Hingmire\n// Automatically generated from Admin Dashboard\nconst DEFAULT_PORTFOLIO_DATA = ' + JSON.stringify(currentData, null, 2) + ';\n\nif (typeof window !== "undefined") {\n  window.DEFAULT_PORTFOLIO_DATA = DEFAULT_PORTFOLIO_DATA;\n}\n';
+      const blob = new Blob([fileContent], { type: 'application/javascript;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', url);
+      downloadAnchor.setAttribute('download', 'data.js');
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      URL.revokeObjectURL(url);
+      showToast('✓ Updated data.js downloaded! Replace data.js in your GitHub repository.');
+    });
+  }
+
   // --- EXPORT JSON ---
   const exportBtn = document.getElementById('btn-export-json');
   if (exportBtn) {
@@ -1055,8 +1086,88 @@
     });
   }
 
+  // --- FIREBASE CLOUD CONTROLS ---
+  function updateFirebaseStatusBadge() {
+    const badge = document.getElementById('firebase-status-badge');
+    if (!badge) return;
+    if (window.isFirebaseConfigured && window.isFirebaseConfigured()) {
+      badge.textContent = '🟢 Cloud Connected & Live Syncing';
+      badge.style.background = 'rgba(74, 222, 128, 0.15)';
+      badge.style.color = '#4ade80';
+      badge.style.border = '1px solid rgba(74, 222, 128, 0.3)';
+    } else {
+      badge.textContent = '⚪ Offline / Local Storage Only';
+      badge.style.background = 'rgba(255, 255, 255, 0.05)';
+      badge.style.color = 'var(--muted)';
+      badge.style.border = '1px solid var(--line)';
+    }
+  }
+
+  function initFirebaseAdminControls() {
+    const apiKeyInput = document.getElementById('fb-apiKey');
+    const projectIdInput = document.getElementById('fb-projectId');
+    const authDomainInput = document.getElementById('fb-authDomain');
+    const storageBucketInput = document.getElementById('fb-storageBucket');
+    const appIdInput = document.getElementById('fb-appId');
+    const saveFbBtn = document.getElementById('btn-save-firebase-config');
+    const syncCloudBtn = document.getElementById('btn-sync-to-cloud');
+
+    if (typeof window.getFirebaseConfig === 'function') {
+      const cfg = window.getFirebaseConfig();
+      if (apiKeyInput) apiKeyInput.value = cfg.apiKey || '';
+      if (projectIdInput) projectIdInput.value = cfg.projectId || '';
+      if (authDomainInput) authDomainInput.value = cfg.authDomain || '';
+      if (storageBucketInput) storageBucketInput.value = cfg.storageBucket || '';
+      if (appIdInput) appIdInput.value = cfg.appId || '';
+    }
+
+    updateFirebaseStatusBadge();
+
+    if (saveFbBtn) {
+      saveFbBtn.addEventListener('click', () => {
+        const newCfg = {
+          apiKey: apiKeyInput?.value.trim() || '',
+          projectId: projectIdInput?.value.trim() || '',
+          authDomain: authDomainInput?.value.trim() || '',
+          storageBucket: storageBucketInput?.value.trim() || '',
+          appId: appIdInput?.value.trim() || ''
+        };
+
+        if (!newCfg.apiKey || !newCfg.projectId) {
+          alert('Please enter at least the API Key and Project ID from your Firebase Console.');
+          return;
+        }
+
+        if (typeof window.setFirebaseConfig === 'function') {
+          window.setFirebaseConfig(newCfg);
+          updateFirebaseStatusBadge();
+          showToast('✓ Cloud settings connected! Syncing data to cloud...');
+          saveData(true);
+        }
+      });
+    }
+
+    if (syncCloudBtn) {
+      syncCloudBtn.addEventListener('click', async () => {
+        collectFormValues();
+        await saveData(true);
+      });
+    }
+  }
+
   // Initialize
-  loadData();
-  populateForms();
-  initPinAuth();
+  async function init() {
+    loadData();
+    if (typeof window.fetchCloudPortfolio === 'function' && window.isFirebaseConfigured && window.isFirebaseConfigured()) {
+      const cloudData = await window.fetchCloudPortfolio();
+      if (cloudData && typeof cloudData === 'object') {
+        loadData();
+      }
+    }
+    populateForms();
+    initPinAuth();
+    initFirebaseAdminControls();
+  }
+
+  init();
 })();
