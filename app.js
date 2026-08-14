@@ -54,16 +54,25 @@
   }
 
   const data = getPortfolioData();
+  let roles = [];
 
-  // Apply custom accent colors if defined
-  if (data.customization) {
-    if (data.customization.accentColor) {
-      document.documentElement.style.setProperty('--champagne', data.customization.accentColor);
+  function renderPortfolioUI(data) {
+    if (!data) return;
+
+    // Update typewriter roles list dynamically
+    roles = (data.profile && data.profile.roles && data.profile.roles.length > 0)
+      ? data.profile.roles
+      : ["Data Analyst", "BFSI Analytics Specialist", "Python & SQL Developer", "Business Intelligence"];
+
+    // Apply custom accent colors if defined
+    if (data.customization) {
+      if (data.customization.accentColor) {
+        document.documentElement.style.setProperty('--champagne', data.customization.accentColor);
+      }
+      if (data.customization.accentTeal) {
+        document.documentElement.style.setProperty('--teal', data.customization.accentTeal);
+      }
     }
-    if (data.customization.accentTeal) {
-      document.documentElement.style.setProperty('--teal', data.customization.accentTeal);
-    }
-  }
 
   // 1. Render Navigation & Logo
   const logoEl = document.getElementById('site-logo');
@@ -543,6 +552,9 @@
     }
   }
 
+  // Initial UI Render
+  renderPortfolioUI(data);
+
   // 9. Interactive Cursor Glow
   const glow = document.getElementById('glow');
   if (glow) {
@@ -553,9 +565,6 @@
   }
 
   // 10. Typewriter Effect
-  const roles = (data.profile && data.profile.roles && data.profile.roles.length > 0)
-    ? data.profile.roles
-    : ["Data Analyst", "BFSI Analytics Specialist", "Python & SQL Developer", "Business Intelligence"];
 
   const typedEl = document.getElementById('typed');
   if (typedEl) {
@@ -704,10 +713,17 @@
     });
   }
 
-  // 14. Real-time sync with localStorage when changes happen in Admin
+  // 14. Real-time sync with localStorage when changes happen in Admin (no page reloads)
   window.addEventListener('storage', (e) => {
-    if (e.key === 'portfolio_data') {
-      window.location.reload();
+    if (e.key === 'portfolio_data' && e.newValue) {
+      try {
+        const parsed = JSON.parse(e.newValue);
+        if (parsed && typeof parsed === 'object') {
+          renderPortfolioUI(parsed);
+        }
+      } catch (err) {
+        console.warn('Storage sync error:', err);
+      }
     }
   });
 
@@ -719,7 +735,14 @@
     }
   });
 
-  // 16. Firebase Cloud Sync on page load (Auto-update if cloud data is newer)
+  if (logoEl) {
+    logoEl.style.cursor = 'pointer';
+    logoEl.addEventListener('dblclick', () => {
+      window.location.href = 'admin.html';
+    });
+  }
+
+  // 16. Firebase Cloud Sync on page load (Auto-update in-place if cloud data is newer)
   if (typeof window.fetchCloudPortfolio === 'function' && window.isFirebaseConfigured && window.isFirebaseConfigured()) {
     window.fetchCloudPortfolio().then((cloudData) => {
       if (cloudData && typeof cloudData === 'object') {
@@ -727,7 +750,7 @@
         const cloudStr = JSON.stringify(cloudData);
         if (currentLocal !== cloudStr) {
           localStorage.setItem('portfolio_data', cloudStr);
-          window.location.reload();
+          renderPortfolioUI(cloudData); // Render updated cloud data instantly in-place!
         }
       }
     }).catch((err) => {
