@@ -575,6 +575,13 @@
 
     function typeLoop() {
       const current = roles[rIdx];
+      if (!current) {
+        rIdx = 0;
+        cIdx = 0;
+        deleting = false;
+        setTimeout(typeLoop, 100);
+        return;
+      }
       if (!deleting) {
         typedEl.textContent = current.slice(0, cIdx + 1);
         cIdx++;
