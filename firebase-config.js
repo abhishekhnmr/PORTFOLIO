@@ -69,8 +69,6 @@
       if (docSnap.exists) {
         const cloudData = docSnap.data();
         if (cloudData && typeof cloudData === 'object') {
-          // Update local cache
-          localStorage.setItem('portfolio_data', JSON.stringify(cloudData));
           return cloudData;
         }
       }
