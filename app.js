@@ -56,6 +56,19 @@
   const data = getPortfolioData();
   let roles = [];
 
+  // 11. Intersection Observer for Scroll Reveals & Smooth Triggers (defined globally for dynamic updates)
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) {
+          en.target.classList.add('in');
+          io.unobserve(en.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
+  );
+
   function renderPortfolioUI(data) {
     if (!data) return;
 
@@ -239,7 +252,7 @@
 
     modalProjCategory.textContent = proj.category || 'Featured Project';
     modalProjTitle.textContent = proj.title;
-    modalProjDesc.textContent = proj.description;
+    modalProjDesc.innerHTML = proj.description || '';
 
     // Tools & Stack
     modalProjTools.innerHTML = (proj.tools || [])
@@ -551,6 +564,11 @@
       floatingResumeBtn.style.display = 'none';
     }
   }
+
+  // Re-observe all reveal elements after dynamic DOM updates
+  document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale').forEach((el) => {
+    io.observe(el);
+  });
 }
 
   // Initial UI Render
@@ -603,20 +621,7 @@
     typeLoop();
   }
 
-  // 11. Intersection Observer for Scroll Reveals & Smooth Triggers
-  const reveals = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
-  const io = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((en) => {
-        if (en.isIntersecting) {
-          en.target.classList.add('in');
-          io.unobserve(en.target);
-        }
-      });
-    },
-    { threshold: 0.12, rootMargin: '0px 0px -40px 0px' }
-  );
-  reveals.forEach((el) => io.observe(el));
+  // 11. Scroll Reveal elements are dynamically observed inside renderPortfolioUI
 
   // 11b. Subtle 3D Card Tilt on Mousemove for Profile Image Frames
   document.querySelectorAll('.hero-img-frame').forEach((frame) => {
