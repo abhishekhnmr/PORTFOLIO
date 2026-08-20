@@ -67,6 +67,10 @@
             showToast('✓ Saved locally & Synced to Cloud Firestore in real time!');
           }
           return;
+        } else if (cloudRes && !cloudRes.success) {
+          console.error('Firebase save error:', cloudRes.error);
+          alert(`⚠️ Cloud Sync Failed:\n\nChanges saved locally but could not sync to Cloud Database.\nReason: ${cloudRes.error || 'Unknown error'}\n\nNote: If you uploaded very large image files, the size might exceed Google Cloud's 1MB limit. Try using smaller images.`);
+          return;
         }
       }
 
@@ -77,6 +81,37 @@
       console.error('Error saving data:', e);
       alert('Could not save changes to local storage.');
     }
+  }
+
+  function compressImage(file, maxWidth = 1200, maxHeight = 900, quality = 0.7) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          let width = img.width;
+          let height = img.height;
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        };
+        img.onerror = (err) => reject(err);
+        img.src = e.target.result;
+      };
+      reader.onerror = (err) => reject(err);
+      reader.readAsDataURL(file);
+    });
   }
 
   function showToast(message) {
@@ -488,21 +523,22 @@
         const file = e.target.files[0];
         if (!file) return;
         const i = e.target.dataset.index;
-        const reader = new FileReader();
-        reader.onload = function (ev) {
-          currentData.projects[i].thumbnail = ev.target.result;
+        compressImage(file, 1200, 900, 0.7).then((dataUrl) => {
+          currentData.projects[i].thumbnail = dataUrl;
           if (!Array.isArray(currentData.projects[i].screenshots)) {
             currentData.projects[i].screenshots = [];
           }
           if (currentData.projects[i].screenshots.length === 0) {
-            currentData.projects[i].screenshots.push(ev.target.result);
+            currentData.projects[i].screenshots.push(dataUrl);
           } else {
-            currentData.projects[i].screenshots[0] = ev.target.result;
+            currentData.projects[i].screenshots[0] = dataUrl;
           }
           renderProjectsList();
-          showToast('✓ Project thumbnail uploaded! Click "Save All Changes" to publish.');
-        };
-        reader.readAsDataURL(file);
+          showToast('✓ Project thumbnail uploaded & compressed! Click "Save All Changes" to publish.');
+        }).catch((err) => {
+          console.error(err);
+          showToast('❌ Image compression failed.');
+        });
       });
     });
 
@@ -516,15 +552,9 @@
           currentData.projects[projIdx].screenshots = [];
         }
 
-        const readPromises = files.map((file) => {
-          return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onload = (ev) => resolve(ev.target.result);
-            reader.readAsDataURL(file);
-          });
-        });
+        const compressPromises = files.map((file) => compressImage(file, 1200, 900, 0.7));
 
-        Promise.all(readPromises).then((results) => {
+        Promise.all(compressPromises).then((results) => {
           results.forEach((dataUrl) => {
             currentData.projects[projIdx].screenshots.push(dataUrl);
           });
@@ -533,7 +563,10 @@
             currentData.projects[projIdx].thumbnail = results[0];
           }
           renderProjectsList();
-          showToast(`✓ ${results.length} screenshots uploaded! Click "Save All Changes" to publish.`);
+          showToast(`✓ ${results.length} screenshots loaded & compressed! Click "Save All Changes" to publish.`);
+        }).catch((err) => {
+          console.error(err);
+          showToast('❌ Image compression failed.');
         });
       });
     });
@@ -1035,13 +1068,14 @@
     photoFileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = function (ev) {
-        document.getElementById('input-photo').value = ev.target.result;
-        currentData.profile.photo = ev.target.result;
-        showToast('✓ Photo loaded! Click "Save All Changes" to publish.');
-      };
-      reader.readAsDataURL(file);
+      compressImage(file, 800, 800, 0.75).then((dataUrl) => {
+        document.getElementById('input-photo').value = dataUrl;
+        currentData.profile.photo = dataUrl;
+        showToast('✓ Photo loaded and compressed! Click "Save All Changes" to publish.');
+      }).catch((err) => {
+        console.error('Image compression failed:', err);
+        showToast('❌ Image compression failed.');
+      });
     });
   }
 
